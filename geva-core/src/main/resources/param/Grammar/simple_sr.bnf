@@ -1,0 +1,4 @@
+<code> ::= (define guess (lambda (x) <expr>))
+<expr> ::= ( <op> <expr> <expr> ) | <var>
+<op>   ::= +|-|*
+<var> ::= x|1.0

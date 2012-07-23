@@ -1,0 +1,9 @@
+# D is maximum.
+# See GEVA/param/Grammars/Experiments/RoyalTreeMultipleDepths for more
+<tree> ::= <leaf> | <intnode>
+<leaf> ::= x
+<intnode> ::= ( <A> <tree> ) | ( <B> <tree> <tree> ) | ( <C> <tree> <tree> <tree> ) | ( <D> <tree> <tree> <tree> <tree> )
+<A> ::= A
+<B> ::= B
+<C> ::= C
+<D> ::= D

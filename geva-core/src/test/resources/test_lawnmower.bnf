@@ -1,0 +1,3 @@
+<prog> ::= <cmd>|<cmd><prog>
+# cmd will be translated to 0,1,2
+<cmd> ::= mow | left | right 

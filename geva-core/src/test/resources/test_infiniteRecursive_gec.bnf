@@ -1,0 +1,7 @@
+# Grammar for lower case letters
+<string> ::= <letter>|<letter><string>
+<letter> ::= <vowel>|<consonant>|<space>
+<space> ::= <space> <GECodonValue(1,2)>
+# Vowels and consonats
+<vowel> ::= <vowel>|v
+<consonant> ::= <consonant>|c

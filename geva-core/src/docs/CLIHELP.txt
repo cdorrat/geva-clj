@@ -1,0 +1,47 @@
+Help information for the GEVA CLI
+
+Commands:
+print
+iterate
+setFitness
+interpolate
+crossover
+help
+quit
+exit
+
+Usage:
+---- print operation ----
+- print                        --> prints the entire population
+- print x                      --> prints the individual at index 
+                                   x in the population
+- print x:y                    --> print all individuals in the 
+                                   range [x,y]
+
+---- iterate operation ----
+iterate                        --> iterate one generation
+
+---- getMaxGens operation ----
+getMaxGens                     --> get total number of generations
+---- setFitness operation ----
+- setFitness x n               --> sets the fitness of the individual 
+                                   at index x to n
+- setFitness x:y n             --> sets the fitness of all individuals 
+                                   in the range [x,y] to n
+
+---- interpolate operation ----
+- interpolate x0 w0 x1 w1 ...  --> prints an individual derived
+                                   by interpolating individuals xi
+				   with weights wi
+- interpolate x w y            --> special case: prints an individual 
+                                   derived by interpolating x and y
+				   with weights w and (1 - w)
+
+---- crossover operation ----
+- crossover x y                --> prints an individual derived by 
+                                   crossing-over individuals x and y
+  	      	   
+---- Misc operations ----
+- help                         --> prints the help screen
+- exit                         --> kills the current GEVA run 
+- quit                         --> kills the current GEVA run

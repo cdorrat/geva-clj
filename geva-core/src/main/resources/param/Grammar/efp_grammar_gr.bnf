@@ -1,0 +1,5 @@
+<prog> ::= <expr>
+<expr> ::= <expr> <op> <expr> | ( <expr> <op> <expr> ) | <var> | <pre-op> ( <var> )
+<pre-op> ::= not
+<op> ::= "|" | &
+<var> ::= d0 | d1 | d2 | d3 | d4

@@ -1,0 +1,1080 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="guide.xsl"?>
+<guide title="GEVA GUI Developer's Guild">
+
+  <!-- About the chapters in this guide -->
+
+  <chapter name="GEVA_GUI Developer's Guide">
+
+    <p><!-- spacing --></p>
+
+    <related>
+      <file name="index.html" location="::/javadoc" />
+      <file name="About.txt" location="UI" />
+    </related>
+
+    <list>
+      <item><b>author:</b> eliott bartley</item>
+      <item><b>date:</b> 2008y08M11d</item>
+    </list>
+
+    <p>This guild describes the major parts of the GEVA GUI project and how they
+    interact with each other from a developer's perspective. It is mostly just
+    notes, musings, and points-of-interest, but also contains tutorials and
+    specific interactions between classes. It does not go into specific details
+    on the individual functions, which is already described in the JavaDocs
+    (see index.html in related files). An overview of each java file can be
+    found src/UI/About.txt (see About.txt in related files).</p>
+
+    <hr />
+
+    <p>Anything in this document that relates to a real piece of source-code,
+    whether lines of executable code or names that are used as class names,
+    is written in a blue fixed-width font, e.g., <c>GEVAPropertiesGUI</c>.</p>
+
+    <p>As a naming convention, classes which inherit from other classes are
+    postfixed with the name of the direct super class, e.g.,
+    <c>GEVAProperty<a>Container</a></c> inherits from
+    <c>GEVA<a>Container</a>Control</c>, likewise,
+    <c>GEVAContainer<a>Control</a></c> inherits from <c>GEVA<a>Control</a></c>.
+    Additionally, classes that are closely related to another class are prefixed
+    with the related class's name, e.g., <c>GEVAGraphPane<a>Item</a></c> closely
+    relates to <c>GEVAGraphPane</c>, i.e., 'Item', which is part of a
+    'GraphPane', has therefore been prefixed with 'GraphPane', (Note also:
+    <c>GEVAGraph<a>Pane</a></c> inherits from <c>GEVA<a>Pane</a></c>). All
+    these similar names can introduce misunderstandings in a document like this,
+    where paragraphs are describing, for example, both <c>GEVAConfig</c> and
+    <c>GEVAConfigGUI</c>; the fact that these are two individual classes may be
+    lost in the text. For this reason, paragraphs that have similar appearing
+    names will highlight the distingusing feature of a particular word, as in
+    above example, this would appear in a paragraph as <c><b>GEVAConfig</b></c>
+    and <c><b>GEVAConfig</b>GUI</c> to draw attention to the fact that they are
+    different. Note: this highlighting only happens once per change, i.e., e.g.,
+    '..<c>GEVA<b>Run</b></c> constains <c>GEVA<b>Pane</b></c>s,
+    <c>GEVAPane</c>s are..' - only the change from 'Run' to 'Pane' is
+    highlighted, the continuation of 'Pane' to 'Pane' is not</p>
+
+    <p>As a short-hand, similar names, described together, may be abbreviated,
+    e.g., <c>setEnabled</c>/<c>setVisible</c> could be abbreviated to
+    <c>setEnabled/Visible</c>, or <c>getText</c>/<c>setText</c> could be
+    abbreviated to <c>get/setText</c>, i.e., the repeated part of the word is
+    removed. Where this happens, the / will be displayed in a blue fixed-width
+    font, and the part of the word that repeats will be italicized. From the
+    examples above, they will appear as <c><i>set</i>Enabled/Visible</c> and
+    <c>get/set<i>Text</i></c>, i.e., 'set' and 'Text' are in italics.</p>
+
+    <p>All "Related files" are linked to the actual files for navigation.</p>
+
+    <hr />
+
+    <p>The GUI can be divided logically into the sections that follow. However,
+    they are not all physically divided, or even packaged, in this way, but if
+    modifications are to be made, they will probably affect only one of these
+    sections. Note: the hierarchy here shows a loose dependence.</p>
+
+    <toc />
+
+  </chapter>
+
+  <!-- About the GUI -->
+
+  <chapter name="GUI">
+
+    <related>
+      <file name="GEVAPropertiesGUI" location="UI" />
+      <file name="GEVAConfigGUI" location="UI">
+        <file name="GEVAConfig" location="UI" />
+      </file>
+    </related>
+
+    <p>This section (and to some extent, the <link name="Controls" />
+    section) was the whole project when it first started, and as such, is the
+    start-up point (<c>GEVAPropertiesGUI</c> contains the Java <c>main</c>), and
+    was where most of the code was written before been refactored out (so there
+    may be little bits left behind). It makes up the main windows that are
+    displayed to the user; the GEVA properties, and GEVA run configurations.</p>
+
+    <hr title="GEVAPropertiesGUI" />
+
+    <p>Since its beginning of just showing a GUI that wrote to the GEVA
+    properties file, <c>GEVAPropertiesGUI</c> now also takes on the following
+    responsibilities:</p>
+
+    <list>
+      <item>Loading/parsing ff.config and graph.config
+      <p>Handled in <c>initialise<b>FF</b>Config()</c> and
+      <c>initialise<b>Graph</b>Config()</c> respectively.</p></item>
+      <item>Creating temporary properties files<p>this is so GEVA can be run
+      without modifying an original properties file; Handled in
+      <c>runPropertiesFile()</c>.</p></item>
+      <item>Properties file management (new and delete)<p>
+      Handled in
+      <c><b>new</b>PropertiesFile()</c>/<c><b>getNew</b>PropertiesFile()</c> and
+      <c><b>delete</b>PropertiesFile()</c>.</p></item>
+    </list>
+
+    <p><c>GEVAPropertiesGUI</c> also handles:</p>
+    
+    <list>
+      <item>Kicking off GEVA<p>Handled in <c>runPropertiesFile()</c>.</p></item>
+      <item>Kicking off GEVAConfig<p>Handled in <c>configure()</c>.</p></item>
+      <item>Auto restarting the GUI<p>when configuration changes are made
+      that need the GUI to be reloaded; Handled in <c>reset()</c>.</p></item>
+      <item>Custom validation<p>for controls that can't be validated
+      generically (e.g. testing that elite size is not greater than population
+      size); Handled in <c>actionPerformed()</c> (under
+      <c>GEVAActionEvent.VALID</c>).</p></item>
+    </list>
+
+    <p>All other parts of <c>GEVAPropertiesGUI</c> deal with displaying GUI
+    elements, monitoring and notifying about property modifications that need to
+    be saved, and saving the properties file.</p>
+
+    <hr title="GEVAConfigGUI" />
+
+    <p><c>GEVAConfigGUI</c> only deals with displaying GUI elements, watching
+    for modifications, naming and invoking saves, and setting whether a reset is
+    necessary. <c><b>GEVAConfig</b>GUI</c> is the window displayed when
+    the user clicks 'configure' in the <c>GEVAPropetiesGUI</c> window and is a
+    GUI wrapper around <c><b>GEVAConfig</b></c>.</p>
+
+    <p><c><b>GEVAConfig</b>GUI</c> does not automatically show controls for all
+    configurable options in <c><b>GEAVConfig</b></c>, they must be included by
+    adding a <c>GEVAPropertyControl</c> in the <c>initialiseProperties()</c>
+    method. All the information required to add a property to the GUI is handled
+    in the <c>GEVAPropertyControl</c> constructor. See <link name="Controls" />.
+    </p>
+
+    <hr title="GEVAConfig" />
+
+    <p><c>GEVAConfig</c> stores all the values read from gui.config and is
+    static so all these settings can be accessed anywhere in the project.</p>
+
+    <p>Note: <c>GEVAConfig</c> handles reading the config from the gui.config
+    file and the command-line as separate tasks. If a new key is added to the
+    properties file, it is not automatically added to the command-line, and
+    visa-versa. It must be programmed for both.</p>
+
+    <p>Adding a new property to gui.config requires doing the following..</p>
+    
+    <list>
+      <item>Open <c>GEVAConfig</c>.</item>
+      <item>Add getX/setX methods for new X property.</item>
+      <item>Call <c>get("X")</c>/<c>set("X", value)</c> within these methods.</item>
+      <item>This is enough to use the property from gui.config, to also
+      allow it to be passed on the command-line, continue the following..</item>
+      <item>Find <c>parseCommandLine</c> (in <c>GEVAConfig</c>).</item>
+      <item>If the property is a switch (on/off)..
+        <item>Under <c>if(flag &lt; 0)</c>, add a unique <b>negative</b> id and
+        call the related setX method, passing whatever is the value for 'on'.</item>
+      </item>
+      <item>If the property is a value (name,value pair)..
+        <item>Under <c>if(flag &gt; 0 &amp;&amp; wait == false)</c>, add a
+        unique <b>positive</b> id and call the related setX method, passing
+        <c>arg</c> to it.</item>
+      </item>
+      <item>Open <c>Util.Constants</c> and find <c>cmdFlags</c>..
+        <item>The format of this array (by array-index) is..
+          <item>[0] - Unique id of command.</item>
+          <item>[1..N-2] - Command-line switches for the command.</item>
+          <item>[N-1] - Description of command.</item>
+        </item>
+      </item>
+      <item>Add the unique negative or positive id to match the id specified
+      earlier and the command-line switches that relate to this property.
+        <item>e.g.,
+          <item>{&quot;-10&quot;, &quot;-f&quot;, &quot;--flag&quot;, 
+          &quot;A flag&quot;}<p>will run {case -10} if the user enters '-f' or
+          '--flag' on the command-line (and if -h is passed, 'A flag' will be
+          displayed as the description for the flag).</p></item>
+          <item>{&quot;10&quot;, &quot;-f&quot;, &quot;--flag&quot;,
+          &quot;A flag&quot;}<p>(with positive 10) will run {case 10} if the user
+          enters '-f X' or '--flag X' on the command-line and 'X' is passed as
+          the 'arg').</p></item>
+        </item>
+      </item>
+    </list>
+    
+  </chapter>
+
+  <!-- About the controls that can be added to the GUI -->
+
+  <chapter name="Controls" depends="GUI">
+
+    <related>
+      <file name="GEVAControl" location="UI">
+        <file name="GEVAPropertyControl" location="UI">
+          <file name="GEVAStringProperty" location="UI" />
+          <file name="GEVANumberProperty" location="UI" />
+          <file name="GEVAChoiceProperty" location="UI" />
+          <file name="GEVAFileProperty" location="UI" />
+        </file>
+        <file name="GEVAContainerControl" location="UI">
+          <file name="GEVABookContainer" location="UI" />
+          <file name="GEVAPageContainer" location="UI" />
+          <file name="GEVAPropertyContainer" location="UI">
+            <file name="GEVAPropertyColContainer" location="UI" />
+            <file name="GEVAPropertyRowContainer" location="UI" />
+          </file>
+          <file name="GEVASpringContainer" location="UI" />
+        </file>
+      </file>
+      <file name="GEVAActionEvent" location="UI" />
+      <file name="GEVAActionListener" location="UI" />
+      <file name="GEVADirtyListener" location="UI" />
+      <file name="GEVAControlGroup" location="UI" />
+    </related>
+
+    <p>To handle all the validation, loading/saving, and types of input, the
+    <c>GEVAControl</c>s were created to take this responsibility away from the
+    GUI, and also make it as automatic as possible.</p>
+
+    <p>The UI is split into 3 main parts, top, middle, and bottom - the top and
+    bottom are hard-coded AWT commands in the main GUI, and deal with loading,
+    deleting and creating properties files (top), and running, saving, and
+    closing the dialog (bottom). The middle deals with editing the actual
+    properties, and has been created using the <c>GEVAControl</c> class
+    structure, rather than AWT, to allow it to be extendable (particularly if
+    the dynamic GUI is implemented), though in particular, it automaticlly
+    handles loading, saving, and validation of properties.</p>
+
+    <p><c>GEVAControl</c> works as follows; there are two main types of control,
+    containers and properties. Containers deal with logically grouping
+    properties, and properties deal with editing the values in the properties
+    file.</p>
+
+    <p>Containers are split into the following sections, which currently are
+    forced to follow a particular pattern - <c>GEVABookContainer</c> is
+    the root container (there must only be one instance) and it should be added
+    directly to the middle part of the GUI. <c>GEVA<b>Book</b>Container</c> is
+    displayed as a JTabbedPane, and can only contain page containers. Each
+    <c>GEVA<b>Page</b>Container</c> is displayed as a single tab in the
+    <c>GEVA<b>Book</b>Container</c> and can only contain Property containers.
+    Each <c>GEVAPropertyContainer</c> container is displayed as a JPanel with a
+    titled border, and stacks one-below-the-other, inside the
+    <c>GEVA<b>Page</b>Container</c>. Each Property container can only contain
+    <c>GEVAPropertyControl</c> controls.</p>
+
+    <p>Originally, the containers were going to allow, basically, any container
+    to be contained in another, rather than force
+    <c>GEVA<b>Book</b>Container</c> -> <c>GEVA<b>Page</b>Container</c> ->
+    <c>GEVAPropertyContainer</c>, but due to time, this has been restrained.</p>
+
+    <p><c>GEVAPropertyControl</c> controls are controls that follow a name/value
+    pair, displayed as a label/input-control. Each inheriting property class
+    implements a different type of input-control and handles validation, loading,
+    and saving of the data in that control.</p>
+
+    <p>The controls, whether containers or properties, inherit from
+    <c>GEVAControl</c>, so <c>GEVAControl</c>'s function will be described in
+    some detail.</p>
+    
+    <hr title="GEVAControl" />
+
+    <p><c>GEVAControl</c>'s constructor takes a <c>dirtyListener</c>, a
+    <c>parent</c>, a <c>type</c>, <c>title</c>, <c>name</c>, and a
+    <c>comment</c>. It can be modified with <c>setEnabled</c>,
+    <c>add/remove<i>ActionListener</i></c>, <c>setVisible</c>, and
+    <c>setText</c>. Has actions, <c>load</c> and <c>save</c>, and has getters,
+    <c>getComponent</c>, <c>countComponents</c>, <c>getText</c>, and
+    <c>validate</c> so this is what all controls must do (it also has getters
+    for the constructor parameters, but these are handled by <c>GEVAControl</c>,
+    rather than being something inheriting classes must provide.</p>
+    
+    <p>Though <c>dirtyListener</c> is given to all types of controls, it is
+    currently only used in property controls. It provides an interface through
+    which the property can notify the GUI that changes have been made that need
+    to be saved. The GUI, being the 'dirtyListener', responds by flagging the
+    selected properties file as 'dirty' so that, if the user does something that
+    would lose those changes, they can be warned. A <c>dirtyListener</c> is just
+    something that implements the <c>GEVADirtyListener</c> interface.</p>
+
+    <p>All controls, except the root, need to know their <c>parent</c>. This is
+    used to automatically add this control to the parent control, i.e., in the
+    constructor of all controls, they call the parent's add method, passing
+    themselves. The parent then calls their (the child's) <c>getComponent</c>
+    method to get the AWT components for adding. So one control is added to
+    another simply by passing the container control as the parent to the
+    contained control. Except, the root container is not given a parent, and it
+    is the responsibility of the GUI to add this container to itself by calling
+    on the containers <c>getComponent</c>.</p>
+
+    <p><c>type</c> is a string which is meaningless except to those controls
+    that make use of it (it is basically a throw-away parameter that can be used
+    if it seems useful. e.g., the file property, given a value of
+    <c>"folder"</c> for this parameter, will display folders, instead of files.
+    Basically, this is a generic way to pass custom data into a control and
+    could have been done all sorts of ways, but I choose strings as it requires
+    little code to use (don't need to allocate objects or nothing, which could
+    clutter the code) yet still allows the code to be self-documenting. However,
+    as time went on, and much string refactoring later, these parameters now use
+    named constants, so instead of <c>"folder"</c>,
+    <c>GEVAFileProperty.PT_FOLDER</c> is used. As this is now the case (using
+    named constants) it would probably have been better if I'd used an int-type
+    rather than string.</p>
+
+    <p><c>title</c> is used by all controls as what to display on the GUI to
+    quickly describe the control's purpose.</p>
+
+    <p><c>name</c> is important - <c>name</c> is the name used when saving the
+    property to the properties file in the name=value format. This was one of
+    the main goals of the <c>GEVAControl</c> classes, to automatically handle
+    saving. By simply constructing a control, means it is automatically loaded
+    and saved when its root parent is asked to load/save.</p>
+
+    <p><c>comment</c> is used by each control to add a tooltip to itself, and is
+    of minor significance.</p>
+
+    <p><c><i>set</i>Enabled/Visible</c> gets the callee and its children to set
+    their enabled and visible states. For containers, enabled state is
+    recursively called through the children, until properties are reached, and
+    only properties enable/disable their AWT controls. Visible is only applied
+    to the callee, as AWT will itself show/hide its children.</p>
+
+    <p><c>get/set<i>Text</i></c>. This is a generic way for anything to get/set
+    the value of a property or container (the input value to that control) and
+    doesn't necessarily have to be used, though currently is used quite
+    extensively, as all controls can map easily from string to its desired type.
+    In general though, access to the control's value is only important
+    internally to the control, as it handles the loading, saving, validation,
+    and all other things that a <c>get/set<i>Text</i></c> method would be used
+    for, but is useful for abstracting away from the details. Also, when saved,
+    resulting values can be taken from the properties object. So even in the
+    case of the <c>GEVAConfigGUI</c>, <c>getText</c> is not used to read from it
+    as it saves into the properties object, which is what is used by
+    <c>GEVAConfig</c> to get/set.</p>
+
+    <p><c>getComponent</c>, <c>countComponents</c> allows the parent to
+    generically add and access the AWT controls used in the <c>GEVAControl</c>.
+    Note: because <c>GEVAControl</c>s call their parent in the constructor,
+    from which the parent attempts to add the new control, it is required that
+    all AWT control already exist before this happens, as the parent will call
+    on the [new] child's <c>getComponent</c>, at this point.</p>
+
+    <p><c>load</c>/<c>save</c> works by the GUI calling on the root containers
+    <c>load</c>/<c>save</c>, passing it a properties object, and the root calls
+    all its children's <c>load</c>/<c>save</c> methods recursively, passing this
+    properties object up, and every control that has a value to load/save will
+    do so by reading/writing the properties object using the <c>name</c> passed
+    in the configuration. This is all the <c>GEVAControl</c> does when
+    loading/saving (is read/write the properties object) and it is up to extenal
+    classes (currently <c>GEVAPropertiesGUI</c> and <c>GEVAConfig</c> (Note: not
+    <c>GEVAConfig<b>GUI</b></c>)) to load/save this properties object to
+    secondary storage. <c>load</c> and <c>save</c> should return true or false
+    based on whether the control being loaded or saved contains a valid value,
+    as this return value is used to display a message to the user asking if they
+    want to continue saving if there are errors, and to take note that errors
+    exist when loading.</p>
+
+    <p><c>validate</c> allows each control to state whether its user input is
+    valid. For containers, this call is recursivly called on its children. For
+    properties, it checks the current input value to see that it is 'valid' and
+    returns true/false. Containers that pass this on to several child properties
+    will return true only if all children returned true, else false. This method
+    is used by each property as the user is typing input to allow it to give an
+    immediate validation response to the user (in a non-intrusive way (see
+    <c>GEVA<b>Property</b>Control</c>s, documented below the next section on
+    <c>GEVA<b>Contrainer</b>Control</c>s)).</p>
+
+    <hr title="GEVAContrainerControl" />
+
+    <p><c>GEVAContrainerControl</c>s inherit directly from <c>GEVAControl</c>
+    and are a base class for all Containers, so these will be described in some
+    detail here.</p>
+
+    <p><c>GEVAContrainerControl</c> doesn't take a <c>name</c> in its ctor,
+    passing null to <c>GEVAControl</c> for this parameter, because containers
+    cannot be saved to the properties file. <c>GEVAContrainerControl</c> also
+    has implementations for <c>GEVAControl</c>'s
+    <c>setEnabled</c>, <c>load</c>, and <c>save</c> methods (goes through all
+    contained (children) controls, calling their
+    <c>setEnabled</c>/<c>load</c>/<c>save</c>), <c>setVisible</c> method (calls
+    <c>getComponent</c> (to get the component of this (the inheriting class's)
+    AWT control and set its visible state)), and <c>get/set<i>Text</i></c>
+    methods (where it does nothing; they don't make sense to containers).</p>
+
+    <p><c>GEVAContrainerControl</c> adds the following methods, <c>add</c> and
+    <c>setVisibleControlGroup</c>.</p>
+
+    <p><c>add</c> allows the container to specify how AWT controls are added to
+    it (when the controls are constructed, they will call on their parent to
+    <c>add</c> themselves. Typically, a container will be created to add a
+    known type of control, (for example, <c>GEVAProperty<b>Container</b></c> was
+    created to take <c>GEVAProperty<b>Control</b></c>s, and as such, knows to
+    expect and be capible of positioning, three AWT controls), but through the
+    use of <c>getComponent</c> and <c>countComponents</c>, the container can get
+    all the AWT controls that the child wants to add.</p>
+
+    <p><b>Important</b>: if inheriting from <c>GEVAContrainerControl</c>, be
+    sure to call the overridden <c>super.add</c> when overriding <c>add</c>, as
+    <c>GEVAContrainerControl</c> adds the control to its list of
+    <c>GEVAControl</c> children, which it uses when calling <c>setEnabled</c>,
+    <c>load</c>, <c>save</c>, and <c>validate</c>, to get its children to do
+    some work!</p>
+
+    <p><c>setVisibleControlGroup</c> is a bit of a hack that was added late. It
+    was added to allow several controls to be grouped together by a name, and
+    then make all those grouped controls visible/hidden with a single call. This
+    is currently used with drop-down controls, to make certain controls visible
+    depending on the state of a drop-down (the link between the drop-down and
+    the <c>setVisibleControlGroup</c> call is part of a custom <c>type</c> for
+    <c>GEVAChoiceProperty</c> controls)</p>
+
+    <p><c>setVisibleControlGroup</c> works as follows.. (Note: it is currently
+    only used in <c>GEVAPropertiesGUI</c>, and not used in <c>GEVAConfigGUI</c>)
+    </p>
+
+    <list>
+      <item>A <c>GEVAControlGroup</c> is created in the main window's class, one
+      for each group of controls.
+      <p><c>GEVAControlGroup</c> is currently just an ArrayList of
+      <c>GEVAControl</c>s.</p>
+      </item>
+      <item>Each <c>GEVAControlGroup</c> is added to a container along with a
+      name.
+      <p>There is no requirement on how this is done, i.e.,
+      <c>GEVAContrainerControl</c> does not have any method for doing this.
+      Currently, <c>GEVABookContainer</c> is the only container that can handle
+      this, and does so by including an <c>addControlGroup</c> method that adds
+      <c>GEVAControlGroup</c>s to a hash-table by name.</p></item>
+      <item>Each <c>GEVAControl</c> that belongs to a group is added by the
+      ArrayList's (from which <c>GEVAControlGroup</c> inherits) add method.</item>
+      <item><c>GEVAContrainerControl</c> implements a default
+      <c>setVisibleControlGroup</c>, but because it doesn't have a way to add
+      <c>GEVAControlGroup</c>s, or any access to them, all it does in this
+      implementation is to call on the <c>parent.setVisibleControlGroup</c>
+      (which will crash if there is no parent as it doesn't check for a 
+      null <c>parent</c>). However, <c>GEVABookContainer</c>, which should be
+      the root parent of all controls (and as it also has the
+      <c>addControlGroup</c> method) overrides the <c>setVisibleControlGroup</c>
+      and in it, gets the named <c>GEVAControlGroup</c>, iterates through its
+      array of <c>GEVAControl</c>s, and calls their <c>setVisible</c>.</item>
+      <item>Additionally, as a custom <c>type</c> of
+      <c>GEVAChoiceProperty.PT_GROUP</c>, <c>GEVAChoiceProperty</c> can be given
+      a <c>params</c> (see <c>GEVAPropertyControl</c> below) that lists
+      "title1,group1,title2,group2,..", and from this, it creates a drop-down
+      containing "title1, title2", and an ArrayList containing "group1, group2",
+      and when a "title" is choosen, the related "group" is passed on to the
+      <c>parent.setVisibleControlGroup</c>, which eventually reaches the
+      <c>GEVABookContainer</c> and performs the magic.</item>
+    </list>
+
+    <p><!-- spacing --></p>
+
+    <hr title="GEVAPropertyControl" />
+
+    <p><c>GEVAPropertyControl</c>s inherit directly from <c>GEVAControl</c>
+    and are a base class for all Properties (which are (name,value,error) tuples
+    of AWT controls), so these will be described in some detail here.</p>
+
+    <p>Because all <c>GEVAPropertyControl</c>s are to have a name, value, and
+    error, and because the name and error are always going to be simply JLabels,
+    <c>GEVAPropertyControl</c> implements <c>getComponent</c> and
+    <c>countComponents</c> where it will return the name and error JLabels
+    through <c>getComponent</c>(0) and (2) respectively, and will return 3
+    for <c>countComponents</c>. Controls that inherit from this therefore, only
+    need to override <c>getComponent</c> and return the unique input control
+    that defines it if <c>getComponent(1)</c> is called or return
+    <c>super.getComponent</c> otherwise. <c>setVisible</c> is also implemented,
+    which sets components 0..2's visible state.</p>
+
+    <p><c>GEVAPropertyControl</c> requires all <c>GEVAControl</c> ctor
+    parameters, and adds two more, <c>initial</c> and <c>params</c>. It also
+    adds the methods (for the new <c>params</c> parameter)
+    <c><i>getParam</i>/<i>getParam</i>Int/Double/Boolean/Equals</c> and (for
+    the error JLabel) methods <c>reset/add<i>InvalidReason</i></c>.</p>
+
+    <p><c>initial</c> parameter specifies the input value that the control
+    should be initialised to when first created, or when reset (asked to load a
+    properties when that properties object has no value that matches the
+    <c>name</c> for this control)</p>
+
+    <p><c>params</c> is similar to <c>type</c> (described above (under
+    the section on <c>GEVAControl</c>s)) in that it is a throw-away parameter,
+    that the control can use a a generic way to get additional information about
+    how it should display. But unlike <c>type</c>, it has not been as successful
+    in being refactored to named constants, due to the complexity some controls
+    require. The general format of this parameter is to specify a comma
+    separated string of custom parameters for the control, e.g.,
+    <c>GEVANumberProperty</c> takes this parameter as "step,min,max", where the
+    first value is the increment size when 'spinning' the number control, and
+    the second and third parameters define lower and upper bounds of valid
+    numbers respectively. Because of this 'general', comma separated, format,
+    several methods have been added to <c>GEVAPropertyControl</c> as helpers
+    for accessing these.</p>
+
+    <p>To help with parsing the <c>params</c> comma separated format, the
+    'getParams' methods have been added. These methods all begin <c>getParam</c>
+    followed by the type to return the parameter as, e.g., <c>getParamInt</c>.
+    To get the parameters as a string type, simply calling <c>getParam</c> will
+    do this (not called getParamString) as no type conversion is perform.
+    These methods don't parse the <c>params</c> when they are called,
+    <c>GEVAPropertyControl</c> parses them in its ctor. Each 'getParams' is
+    accessed by index of the comma separated value to 'get' and each comes
+    in two flavours: a 'default', and an 'alternative'. The 'default' version
+    will return the 'zero-value' for the requested type if the <c>index</c>ed
+    parameter is out of range, isn't specified, or cannot be cast to the
+    requested type. The 'zero-value' is null for strings, 0 for numbers, and
+    false for booleans. The 'alternative' version allows the 'getParams' to be
+    called with an <c>index</c> and an <c>alternative</c> value. This does the
+    same as the 'default' version, except, instead of returning the 'zero-value',
+    it returns the <c>alternative</c> value specified. An additional feature of
+    the 'getParams' methods is that they won't throw an exception, unless it's
+    a really bad one, like an Error.</p>
+
+    <p>Another helper, to help with the error JLabel, are methods
+    <c>resetInvalidReason</c> and <c>addInvalidReason</c>.
+    <c>resetInvalidReason</c> should be called first when validating, and
+    undoes everything <c>addInvalidReason</c> does. While validating, every time
+    a problem is encountered, <c>addInvalidReason</c> should be called, passing
+    a description of the problem (using I18N.get typically). All problems passed
+    in this way will accumulate into the error JLabel and each will appear on a
+    new line. The error JLabel will also show itself when this happens and will
+    appear directly below the input control (the
+    <c>GEVAProperty<b>Container</b></c> will position it) so it doesn't need to
+    include the name of the control in error, it should be obvious from its
+    position.</p>
+
+    <p>If creating a new <c>GEVAPropetery<b>Control</b></c>, it is best to, as
+    well as the overridden <c>validate</c> method, have a <c>valid</c> method
+    that does all the actual work of validating and returning true/false. This
+    should then be called by the <c>validate</c> method and based on the result,
+    should colour the background of the input control red if there's and error
+    and white otherwise. Additionally, this allows <c>valid</c> to be called
+    when only validation should be done, without affecting the input control,
+    for example, when <c>load</c> and <c>save</c> (see above) are called.</p>
+
+    <hr title="Events" />
+
+    <p>Note: <c>GEVAStringProperty</c> currently doesn't implement any of the
+    events.</p>
+
+    <p>To make <c>GEVAControl</c>s to be a little more useful, there are four
+    different events to allow the caller to customise aspects of the control's
+    behaviour. These events are <c><i>GEVAActionEvent.</i>LOAD/SAVE/DIRTY/VALID</c>
+    and are called when loading/saving to the properties object, editing the
+    input control, and validating the control respectively. Note: Validation is
+    also done during load, save, and editing, so <c>VALID</c> will be fired just
+    after <c>LOAD</c>, <c>SAVE</c>, and <c>DIRTY</c> events are fired too.</p>
+
+    <p>To listen to <c>GEVAPropertyControl</c> events, a class needs to
+    implement <c>GEVAActionListener</c>,implement the
+    <c>actionPerformed(GEVAActionEvent)</c> method and be added to the TODO</p>
+
+    <hr title="Existing Property Controls"/>
+
+    <p>This is a bit about the workings TODO</p>
+
+    <hr />
+
+    <p>This all fits together by the following steps..</p>
+    <p>Setup:</p>
+    <list>
+    <item>A control is created and given (to ctor) a parent and the control's
+    details.</item>
+    <item>The control creates any AWT controls that make up its visible portions
+    </item>
+    <item>The control calls on the parent container to get the parent to add
+    this control to itself (the parent).</item>
+    <item>The parent calls the child's <c>getComponent</c> to get the actual AWT
+    component, which it then adds to its awt component.</item>
+    <item>The root (Book) control has a null parent and doesn't add itself to
+    the GUI. Instead, the GUI creates the Book, and then asks the Book to give
+    it its AWT control, and then the GUI adds it itself.</item>
+    </list>
+
+    <p>Editing:</p>
+    <list>
+      <item>Each property should make itself the listener of its input control
+      </item>
+      <item>On update, each property should validate the contents.</item>
+      <item>Each property should also call <c>super.dirtyListener.setDirty()</c>
+      so that the UI will know the properties need to be saved.</item>
+      <item>Each property is also responsible for ensuring the action events are
+      handled correctly. Currently <c>GEVAStringProperty</c> does not.</item>
+    </list>
+
+    <p>Load/Save:</p>
+    <list>
+      <item>Initially (ctor), each control will be given a default value, which
+      it should display. It will also be given a <c>name</c>, (see below).</item>
+      <item>When the GUI issues a load or save, it will call the Book's
+      <c>load</c>/<c>save</c>.</item>
+      <item>The base container's response is to call all its children's
+      <c>load</c>/<c>save</c>.</item>
+      <item>Eventually, this will reach the property's <c>load</c>/<c>save</c>
+      call.</item>
+      <item>Each property is then responsible for looking up and getting/setting
+      the property of the <c>name</c> given in the ctor (see above).</item>
+      <item>The <c>load</c>/<c>save</c> call will eventually return to the GUI's
+      call, and it is the GUI that will be responsible for the actual
+      reading/writing from/to disk.</item>
+    </list>
+
+    <p><!-- spacing --></p>
+    
+    <hr />
+    
+    <p>To keep all this working (when new controls are added) the following must
+    be maintained..</p>
+
+    <list>
+      <item>The constructor should be used to call add on the <c>parent</c>.
+      Note: When creating a new Property, only call <c>parent.add</c> for the
+      value part (the AWT control that displays the value), the name part will
+      be called by the PropertyControl super class.</item>
+      <item>All controls must be created before calling <c>parent.add</c>, as it
+      calls on the <c>getComponent()</c>, which must return the created
+      controls.</item>
+      <item>Containers (extending from <c>GEVAContainerControl</c>)
+      must call <c>super.add(control)</c> in their <c>add(GEVAControl)</c>
+      method. This performs two tasks, (1) it applies the tooltip to the control
+      being added, and (2) (more importantly) records the fact that the control
+      added is a child of this control, which is used when recursively calling
+      children to save or become enabled etc.</item>
+      <item>If adding a new <c>GEVA<b>Page</b>Container</c> to a
+      <c>GEVA<b>Book</b>Container</c> that's empty, there must be at least one
+      <c>GEVASpringContainer</c> added to it too (it can't be all just property
+      containers). Otherwise, all <c>GEVAProperty<b>Container</b></c>s wont be
+      correctly sized and will go to size 0, so will appear as though nothing
+      was added.</item>
+      <item>Note: (if inheriting from <c>GEVAProperty<b>Control</b></c>).
+      <c>GEVAPropertyControl</c> returns 3 for <c>countComponents</c>,
+      even though it only has 2 components. It is expected that its inheriting
+      class will have the third component.</item>
+    </list>
+    
+    <p><!-- spacing --></p>
+
+  </chapter>
+
+  <!-- About how GEVA is run from the GUI -->
+
+  <chapter name="Running GEVA">
+
+    <related>
+      <file name="GEVARun" location="UI.Run" />
+      <file name="GEVAPane" location="UI.Run" />
+      <file name="GEVAPaneManager" location="UI.Run" />
+      <file name="GEVAStreamReader" location="UI.Run" />
+      <file name="GEVARunning" location="UI.Run" />
+      <file name="GEVAFitness" location="UI" />
+      <file name="GEVAJarHunter" location="UI" />
+    </related>
+
+    <p>GEVA is run by calling on the shell to execute the JVM and run the GEVA
+    jar file (given the filepath to a properties file, a list of jars to include,
+    and taking details from <c>GEVAConfig</c>). This happens in the constructor
+    of <c>GEVARun</c> (in <c>run(String, GEVAFitness)</c>, from <c>init</c>,
+    from ctor).</p>
+
+    <p><c>GEVARun</c> is based on a JDialog, and the running of GEVA is tightly
+    coupled to this JDialog - if the dialog is closed, the GEVA run is
+    terminated! (done in <c>cmdStop_onClick</c>, which is called when the user
+    clicks the stop button, and called from <c>windowClosing</c>, when the user
+    clicks the window's X button).</p>
+
+    <p><c>GEVA<b>Run</b></c> also acts as the window in which all information
+    about the run is output, and it does this by (1) adding
+    <c>GEVA<b>Pane</b></c>s (2) being a <c>GEVAPaneManager</c> and (3) (to the
+    <c>GEVAPane</c>s that require it) managing the <c>GEVAStreamParsers</c>.
+    This adds a significant number of additional responsibilities..</p>
+
+    <list>
+      <item>Maintain <c>GEVAStreamParsers</c>
+        <p>Briefly, a <c><b>GEVAStreamParser</b></c> is a group of classes that
+        'listen' to the stream of text from the standard-out and error-out
+        streams of GEVA, parses that text (optionally storing the results in a
+        structure), and calls listeners when a successful parsing event has
+        occurred (i.e., the <c><b>GEVA</b>Graph<b>StreamParser</b></c> only
+        'understands' lines that contain graphable data or labels, and when it
+        encounters one of these lines, it generates an event, whereas otherwise
+        it remains silent). <c><b>GEVAStreamParser</b></c> is described in more
+        details in <link name="Parsers" />
+        </p>
+        <p>Maintaining <c>GEVAStreamParsers</c> requires doing the following..</p>
+        <item>Store the object reference to the <c>GEVAStreamParser</c>.</item>
+        <item>Construct each <c>GEVAStreamParser</c>, giving them all the same
+        <c>Extensions</c> object (described further in <link name="Parsers" />
+        and <link name="Extensions" />).</item>
+        <item>Add the correct <c>GEVA<b>Pane</b></c>s to the correct
+        <c>GEVAStreamParser</c>s.</item>
+        <p>i.e., it is the responsibility of <c>GEVA<b>Run</b></c> to perform
+        all these tasks! More specifically, it is not the responsibility of a
+        <c>GEVA<b>Pane</b></c> to know what <c>GEVAStreamParser</c> it should be
+        using, even though this is an important relationship to set up, and may
+        seem like it should be.</p>
+        <p>Note: A <c>GEVA<b>Pane</b></c> is not shown when it is added, only
+        when the <c>GEVAPane</c>, through the <c>GEVAPaneManager</c>, asks to be
+        viewed. This allows the <c>GEVAPane</c> to sit in the background until a
+        parsing event of interest should cause it to show. For example, the
+        graph pane and l-system pane don't show themselves until the parsers
+        actually have something for them to show.</p>
+      </item>
+      <item>Add <c>GEVAPane</c>s.
+        <p>Briefly, a <c>GEVA<b>Pane</b></c> is a JPanel, which is free to do
+        whatever it wishes in terms of how it works internally (i.e., it's
+        nothing special), except, it must call on the <c>GEVAPaneManager</c>
+        interface, whereby it becomes useful to the <c>GEVA<b>Run</b></c> window.
+        It is also expected to listen to parser events, so it can display
+        content based on the running instance of GEVA, but not required.
+        <c>GEVA<b>Pane</b></c> is described in more detail in
+        <link name="Output Panes" />.</p>
+        <p>Adding <c>GEVAPane</c>s requires doing the following..</p>
+        <item>Construct each <c>GEVA<b>Pane</b></c> passing <c>GEVA<b>Run</b></c>
+        as the <c>GEVAPaneManager</c> (described next) - this happens between
+        <c>//[<b>BEGIN</b>_PANE_INIT[</c> and <c>//]<b>END</b>_PANE_INIT]</c>
+        comments (in <c>GEVA<b>Run</b></c>), which have been added to help
+        identify where new panes should be allocated.</item>
+        <item>Add the <c>GEVA<b>Pane</b></c> AWT component when the
+        <c>GEVAPane</c> calls on the <c>GEVAPaneManager</c> to show.</item>
+        <p>i.e., if a new <c>GEVA<b>Pane</b></c> is created, it must be
+        allocated in <c>GEVA<b>Run</b></c>. No additional work is necessary to
+        show it, <c>GEVAPaneManager</c> already handles this.</p>
+      </item>
+      <item>Be a <c>GEVAPaneManager</c>.
+        <p>A <c>GEVAPaneManager</c> is an interface between the
+        <c>GEVA<b>Pane</b></c> (JPanel) and the <c>GEVA<b>Run</b></c> (JDialog)
+        that displays it. It's implementor (<c>GEVA<b>Run</b></c>) is passed
+        into the <c>GEVA<b>Pane</b></c> during construction and is used to call
+        on the <c>GEVA<b>Run</b></c> window to perform GUI tasks, such as
+        display the <c>GEVA<b>Pane</b></c>, add buttons to the
+        <c>GEVA<b>Run</b></c> toolbar, and add status entries to the
+        <c>GEVARun</c> status bar.</p>
+        <p>To manage the interaction between <c>GEVA<b>Run</b></c> and the
+        <c>GEVA<b>Pane</b></c>s it
+        contains, this is an additional responsibility (all of which are handled
+        by <c>GEVAPaneDetails</c>, a nested class within
+        <c>GEVA<b>Run</b></c>..</p>
+        <item>Display the GEVAPane when it asks to do so, but only the first
+        time it asks.
+        <p>This is to allow the <c>GEVA<b>Pane</b></c> to simply call on
+        <c>GEVA<b>Run</b></c> to show it inside a parsing event (which may be
+        called several times) while preventing that pane from attempting to show
+        itself every time a parsing event occurs.</p>
+        </item>
+        <item>Track which tab relates to the pane, so it can be re-selected if
+        the pane must show itself again.</item>
+        <item>Add tools from the pane to the <c>GEVARun</c> toolbar.
+        <p>This also must track which tools belong to which panes, as the tools
+        are shown/hidden when the user clicks on/off the tab of the pane to
+        which the tools belong.</p>
+        </item>
+        <item>Add status information from the pane to the <c>GEVARun</c> status
+        bar.</item>
+        <p><!-- spacing --></p>
+      </item>
+      <item>Be an end-of-stream listener
+      <p><c>GEVA<b>Pane</b></c>s are typically the only thing that listen to the
+      parser events, however, <c>GEVA<b>Run</b></c> is also a listener
+      (listening to <c>GEVAGlobalStreamParser</c>), and is so to allow it to
+      listen to the end-of-stream event (all stream- parsers fire this event,
+      not just <c>GEVAGlobalStreamParser</c>). <c>GEVARun</c> uses this event to
+      notify the user that GEVA has stopped running - which is something of a
+      presumption because this event is caused by the stream-reader not being
+      able to read the GEVA processs's standard-out stream, which is presumed
+      (by me) to only happen when the process stops running. Or more
+      specifically, I don't know of any other way to test when the process
+      stops.</p>
+      </item>
+    </list>
+
+    <hr title="GEVARunning" />
+    
+    <p>When <c>GEVARun</c>'s JDialog closes it must terminate the running
+    instance of GEVA, which it does in the <c>windowClosing</c> event - however,
+    when the <c>GEVAPropertiesGUI</c> window is closed, Java automatically
+    closes all child windows (which all <c>GEVARun</c> windows are) but Java
+    does not fire the <c>windowClosing</c> event for these windows[?] so there
+    is the additional class - <c>GEVARunning</c>.
+    </p>
+
+    <p><c>GEVARunning</c> maintains a list of all <c>GEVARun</c> windows
+    currently open and when <c>GEVAPropertiesGUI</c> is closed, in its 
+    <c>windowClosing</c>, it calls on <c>GEVARunning</c> to get it to close all
+    child windows by calling their <c>windowClosing</c> method explicitly (which
+    in turn calls dispose() for that window).</p>
+
+    <p><c>GEVARunning</c> has <c>GEVARun</c> objects added to it by
+    <c>GEVAPropertiesGUI</c> when a new <c>GEVARun</c> is created
+    (<c>runPropertiesFile</c>). When <c>GEVARun</c>'s window is closed
+    (<c>windowClosing</c>), it calls <c>GEVARunning</c>, asking <c>GEVARunning</c>
+    to remove itself (<c>GEVARun</c>) from <c>GEVARunning</c>'s list. And when
+    <c>GEVAPropertiesGUI</c> is closed (<c>windowClosing</c>), it calls
+    <c>GEVARunning</c>, asking it to close all <c>GEVARun</c> windows it has
+    listed. As this causes each <c>GEVARun</c>'s <c>windowClosing</c> to be
+    called, this also has the affect of removing each window from the list. This
+    affect is used, after each window is closed, to see if that window is still
+    in the list. If it is, it means the user must have cancelled the
+    <c>GEVARun</c> window's notification to close, and this information is then
+    used to cancel the closing of the <c>GEVAPropertiesGUI</c> window too.</p>
+
+    <hr title="GEVAFitness" />
+
+    <p>When <c>GEVARun</c> starts GEVA, if the fitness-function of the selected
+    properties file has been configured to use additional jar files (that need
+    to be added to the class path) or command-line switches, this is handled by
+    the <c>GEVAFitness</c> class.</p>
+
+    <p><c>GEVAFitness</c> is created by <c>GEVAPropertiesGUI</c> during parsing
+    of the ff.config file (<c>initialiseFFConfigClass</c>) and stored in a
+    hashmap (within <c>GEVAPropertiesGUI</c>) that links it by the name of the
+    fitness-function's class name. When a fitness-function is changed
+    (<c>GEVAPropertiesGUI.actionPerformed</c>, under
+    <c>GEVAActionEvent.DIRTY</c>), the related <c>GEVAFitness</c> is stored and
+    passed on to <c>GEVARun</c> when it's created (<c>runPropertiesFile</c>).
+    <c>GEVARun</c> then uses this to get the additional details it needs for the
+    run.</p>
+
+    <p><c>GEVAFitness</c> performs the following tasks..</p>
+
+    <list>
+      <item>Store the configured (ff.config) default grammar for a
+      fitness-function
+      <p>Not related to <c>GEVARun</c>; this is used when the user selects a
+      fitness-function to automatically pick a grammar.</p>
+      </item>
+      <item>Store a list of names
+      <p>This is a feature of the ff.config - ff.config structure is to specify
+      a list of fitness-functions, each followed by a list of names. The jar
+      files and command-line arguments included in ff.config are in a name,value
+      format, so several fitness-functions can share jar files and command-line
+      arguments by this name. When <c>GEVARun</c> needs the list of jar files
+      and command-line arguments, this name is used to look them up.</p>
+      </item>
+      <item>Store a static list of command-line arguments in a hash-map, which
+      relates a name to a string of command-line arguments.</item>
+      <item>Jar files are not handled by <c>GEVAFitness</c>, but instead by
+      <c>GEVAJarHunter</c> (see below for more details)
+      <p>Briefly though, <c>GEVAJarHunter</c> also contains a static hash-map,
+      which also relates a name to a string of jar files in a format suitable
+      for adding to the command-line used to execute GEVA.</p></item>
+    </list>
+
+    <hr title="GEVAJarHunter" />
+
+    <p>Jar files can be listed in ff.config by wildcard, which also accepts
+    recursive wildcards for directories, so there is the possibility that a
+    large portion of the disk would have to be searched to find all the jar
+    files configured. Because of the potential for long searches, and because
+    this search is done when the GUI is started (and not cached), it is done in
+    a worker thread, and this is all handled in <c>GEVAJarHunter</c>.</p>
+
+    <p><c>GEVAJarHunter</c> is static and does nothing until
+    <c>GEVAPropertiesGUI</c> starts parsing ff.config
+    (<c>initialiseFFConfigJar</c>), at which point <c>GEVAPropertiesGUI</c>
+    starts adding 'name','search-path' values from ff.config to
+    <c>GEVAJarHunter</c>, and <c>GEVAJarHunter</c> stores these 'search-paths'
+    in a hash-map by 'name'. Once ff.config has finished parsing successfully,
+    <c>GEVAPropertiesGUI</c> calls on <c>GEVAJarHunter</c> to <c>start</c>, and
+    <c>GEVAJarHunter</c> creates and starts a thread.</p>
+
+    <p><c>GEVAJarHunter</c>'s thread iterates through the list of all names and
+    search-paths, and for each one, calls on <c>Util.PathTools.fileList</c> to
+    perform the search (<c>fileList</c> does the actual work of parsing the
+    search-path string, and recursively matching and searching directories for
+    the files). <c>fileList</c> then returns an array of files found and,
+    <c>GEVAJarHunter</c> goes through this array, appending each found jar, into
+    a string suitable for passing to Java's class path switch (a,
+    string-of-jar-files). It then adds this string to a second hash-map which
+    links 'name' (the same 'name' iterated with the 'search-path') to the
+    string-of-jar-files. All of this is completely in the background, except
+    when the user actually goes to run GEVA, and it needs the
+    string-of-jar-files.</p>
+
+    <p>Note: While <c>GEVAJarHunter</c> is looping, building each
+    string-of-jar-files, it restarts the iterating-though-name/search-paths each
+    time around. It keeps the loop progressing by also checking to see that the
+    related name/string-of-jar-files isn't already populated, and skipping the
+    search-path it if it has. This is done, rather than just looping though the
+    name/search-path list, and calling <c>fileList</c> one-after-the-other,
+    because there was going to be the possibility that the name/search-path list
+    would be processed out of order. This would be useful so that certain
+    search-paths could be prioritised based on the user selecting or choosing to
+    run a fitness-function that needed those search-paths; that search-path
+    could be set to be searched immediately, so would be populated ahead of
+    others. This feature was not implement though, as there is currently no sane
+    reason to have search-paths that search so much of a disk that it wouldn't
+    be able to complete faster than the user could click the run button.</p>
+
+    <p>When GEVA is run, it asks <c>GEVAJarHunter</c> (through
+    <c>GEVAFitness</c>) to give it all the string-of-jar-files for all names
+    that relate to the selected fitness-function (similar to how it asks for all
+    command-line arguments (described above)). When <c>GEVAJarHunter</c> is
+    asked to get each one of these named string-of-jar-files, it first checks if
+    it's been populate yet. This is done by checking if the named
+    string-of-jar-files is not null. If it's not null, it simply returns this
+    and continues, however, if it is null, it means the thread hasn't come
+    around to populating it yet. At this point, it goes into a loop, where it
+    polls the hash-map until it is populated. So that the user is not left
+    waiting for this to complete, every time the thread finishes populating each
+    named string-of-jar-files, it unlocks a binary-semaphore, loops, and then
+    locks it again. The method polling the hash-map also tries to lock this
+    semaphore and immediately unlocks it when it does. This allows the polling
+    to only occur when an actual update to the hash-map has been made, but more
+    importantly, it also is how the user can cancel the wait. The wait for this
+    to unlock will continue only for 5 seconds, after this time the user is
+    asked if they want to continue waiting. If they say yes, the hash-map is
+    polled again (in case it was updated while the message-box was displayed),
+    then loops to wait another 5 seconds for the lock. If the user says no, null
+    is returned and used by <c>GEVARun</c> to cancel starting GEVA, though the
+    <c>GEVARun</c> window will remain open and will display (in the console
+    window) a message that the user cancelled. This is done by 'injecting' the
+    message into the error parser, which the console (<c>GEVAOutputPane</c>) has
+    been configured to listen to (see <link name="Output Panes" /> and
+    <link name="Parsers" />) </p>
+
+  </chapter>
+
+  <!-- About how panes interact with GEVA and how new ones can be added -->
+
+  <chapter name="Output Panes" depends="Running GEVA">
+    
+  </chapter>
+
+  <!-- The graph pane has a lot more things going on, and this is about them -->
+
+  <chapter name="Graph Pane" depends="Output Panes">
+    
+  </chapter>
+
+  <!-- Panes get their information from parsers, which is what this is about -->
+
+  <chapter name="Parsers" depends="Output Panes">
+
+    <related>
+      <file name="GEVARun" location="UI.Run" />
+      <file name="GEVAStreamReader" location="UI.Run" />
+      <file name="GEVAStreamParser" location="UI.Run">
+        <file name="GEVAGlobalStreamParser" location="UI.Run" />
+        <file name="GEVAConfigurationStreamParser" location="UI.Run" />
+        <file name="GEVAStandardStreamParser" location="UI.Run" />
+        <file name="GEVAErrorStreamParser" location="UI.Run" />
+        <file name="GEVAGraphStreamParser" location="UI.Run" />
+        <file name="GEVALSystemStreamParser" location="UI.Run" />
+      </file>
+    </related>
+
+    <p>When GEVA is running, the GEVAStreamReader is capturing GEVA's console
+    output. Each time it reads a line from GEVA, it passes it on to any
+    GEVAStreamReader.Listener listeners, which is what GEVAStreamParser (and
+    inheriting classes) are.</p>
+
+    <p></p>
+
+  </chapter>
+
+  <!-- Parsers communicate with each other through extensions -->
+
+  <chapter name="Extensions" depends="Parsers">
+
+  </chapter>
+
+  <!-- A little internationalisation -->
+
+  <chapter name="Internationalisation">
+    
+    <related>
+      <file name="I18N" location="Util">
+        <file name="messages.properties" location="UI.res.locale" />
+      </file>
+      <file name="GEVAHelper" location="Util" />
+    </related>
+    
+    <p>All texts to be viewed by a user are contained in messages.properties and
+    loaded into the GUI through I18N.get. There are other texts that are for
+    debugging purposes, (these are hard-coded into the source in English).</p>
+
+    <p>To add a string to be displayed to the user, add the string to
+    messages.properties in the format name=value and call I18N.get("name"),
+    which will return "value". If parameters are added to value (see
+    <link name="MessageFormat">
+      http://java.sun.com/j2se/1.4.2/docs/api/java/text/MessageFormat.html
+    </link>), those parameters can be passed in after the "name" in get,
+    e.g., I18N.get("name", "param1", 2, new Date(), etc.);.</p>
+
+    <p>Additional languages can be added by adding messages_ln_CN.properties
+    files where 'ln' is the two character language code, and CN is the two
+    character country code. This is a Java feature, so see Java's docs.</p>
+
+    <hr />
+
+    <p>GEVAHelper also has some internationalisation functions and these are
+    parseInt, parseFloat, and parseDouble. These functions parse from string
+    representation to the method's specified type, and do so by first formatting
+    the string to a parsable format. e.g., if the string contained the value
+    "1.234.567,890", (i.e., '.' for thousands separator, and ',' for floating
+    point), it would first be formatted to "1234567.890" and then parsed.</p>
+
+  </chapter>
+
+  <!-- Additional utilities that are useful to the project -->
+
+  <chapter name="Utilities">
+    
+  </chapter>
+
+  <!-- Things that didn't fit anywhere else -->
+
+  <chapter name="Miscellaneous">
+    
+  </chapter>
+
+  <!-- Not a GUI element, but I rewrote the LSystem so it would work with the
+       GUI and figured I should document it -->
+
+  <chapter name="Fractal">
+
+    <related>
+      <file name="LSystem2" location="Fractal" geva="true" />
+      <file name="LSystem2Renderer" location="Fractal" geva="true" />
+      <file name="LSystem2Panel" location="Fractal" geva="true">
+        <file name="LSystem2PanelSelect" location="Fractal" geva="true" />
+      </file>
+      <file name="LSystem2Control" location="Fractal" geva="true">
+        <file name="LSystem2FDBoxCounting" location="Fractal" geva="true" />
+        <file name="PSLSystem2" location="Fractal" geva="true" />
+      </file>
+      <file name="LSystem2State" location="Fractal" geva="true" />
+      <file name="LSystem2StateTrace" location="Fractal" geva="true" />
+      <file name="LSystem2StateTraceEvent" location="Fractal" geva="true" />
+      <file name="LSystem2Config" location="Fractal" geva="true" />
+      <file name="guiComp" location="Fractal" geva="true" />
+      <file name="protoComp" location="Fractal" geva="true" />
+      <file name="FractalDimension" location="Fractal" geva="true" />
+    </related>
+
+    <p><c>LSystem2</c> is a complete rewrite of <c>LSystem</c> with anything
+    that's not l-system related factored out. <c>LSystem2</c>'s sole
+    responsibility is now to perform l-system moves given an <c>axiom</c>,
+    <c>grammar</c>, <c>depth</c>, and <c>angle</c>; it does nothing else.
+    However, when <c>execute</c>d, it can be given an <c>LSystem2StateTrace</c>
+    interface implementor (passed as a parameter to <c>execute</c> rather than
+    using listeners), and through this, callers of the <c>LSystem2</c> can
+    perform something useful.</p>
+
+    <p>One thing that does something useful with <c>LSystem2</c> is the
+    <c>LSystem2Renderer</c>, which, when inherited with the abstract
+    <c>drawLine</c> implemented, gives each move as a line segment scaled to
+    fit inside an area set by <c>LSystem2Renderer.setDimension</c>.</p>
+
+    <p>Such <c>LSystem2Renderer</c> is the <c>LSystem2Panel</c>. This is a
+    JPanel which renders the l-system into the JPanel, scaled and centered to
+    fit. Unlike the <c>LSystem2</c> and <c>LSystem2Renderer</c> that takes the
+    inputs <c>axiom/grammar/depth/angle</c> in the ctor and cannot be changed,
+    the <c>LSystem2Panel</c> has <c><i>set</i>Axiom/Grammar/Depth/Angle</c> to
+    change these on the fly (internally constructing new
+    <c>LSystem2Renderer</c>s for each call).</p>
+
+    <p><c>LSystem2Panel</c> is a bare minimum JPanel and l-system. To add a bit
+    of fluff to the panel for the Selection-Operator multiple-display, the
+    <c>LSystem2PanelSelect</c> inherits from <c>LSystem2Panel</c> to do some
+    custom styling. This currently only renders a border around the panel, and
+    shrinks the l-system to fit in this border. It also used to show the fitness
+    of the l-system as a red bar, but this has been commented out.</p>
+
+    <p></p>
+
+  </chapter>
+
+</guide>

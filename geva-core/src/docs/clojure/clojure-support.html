@@ -1,0 +1,120 @@
+<html>
+  <head>
+    <title>Clojure support in GEVA</title>
+    <link type="text/css" rel="stylesheet" href="lisppaste.css" />
+  </head>
+
+<body>
+  <h3>Clojure support in <a href="http://ncra.ucd.ie/Site/GEVA.html">GEVA</a></h3>
+  Clojure is a lisp dialect that runs on the JVM, it has good performance, is well suited to paralell programming and has excellent JAVA interoperability, for more details see <a href="http://clojure.org">http://clojure.org</a> The clojure support that's been added to GEVA falls into 3 categories:
+<ul>
+  <li><a href="#calling-from-clj">Call GEVA directly from Clojure</a><br/>
+    You can call GEVA directly from your clojure source, the API allows you to load and modify properties files, programatically create grammars and access the results of your evolutionary runs.
+  </li>
+  <li><a href="#scripting-geva-runs">Script evolutionary runs written in Java</a><br/>
+    Since the Clojure support allows you to load property and grammar files and access the results of a run you can use it to easily script normal GEVA runs and collect and plot higher level statistics. This allows you to answer questions like <em>&quot;What is the average number of generations to solve the Simple Regression problem with varying population sizes?&quot;</me>
+  </li>  
+  <li><a href="#creating-clj-fitness">Writing fitness functions in Clojure</a><br/>
+    You can write fitness functions in a separate clojure source file and reference them in your properties files. The API provides access to the GEVA properties and random number generators in a thread safe manner. Programs written in this manner are run with the standard GEVA GUI or command line and configured via the properties files.
+  </li>
+
+  <h3>Getting started</h3>
+  Download the geva-clj-1.1.0, jar and add it to your classpath. If you're using leinegen you can add the following to your project.clj.
+  &quot;Some magic stuff here&quot;
+  
+  <h3 id="calling-from-clj">Calling GEVA from Clojure</h3>
+  This approach allows you to easily embed GEVA in idiomatic clojure programs by including geva-clj-x.x.x.jar on the classpath. and using the geva library.
+  The follow sample is equivalent to the symbolic regression included with the GEVA distribution.
+  
+  <!-- formatted clojure source copied from http://paste.lisp.org/ -->
+  <pre class="paste-area">
+<span class="paste"><span class="paren1">(<span class="paste">ns example1
+  <span class="paren2">(<span class="paste"><span class="keyword">:use</span> [geva]</span>)</span></span>)</span>
+  
+<span class="comment">; this is the function we're trying to discover
+</span><span class="paren1">(<span class="paste"><i><span class="symbol">defn</span></i> target-fn [x]  
+  <span class="paren2">(<span class="paste"><a href="http://www.lispworks.com/reference/HyperSpec/Body/a_pl.htm" class="symbol">+</a> x <span class="paren3">(<span class="paste">Math/pow x 2</span>)</span> <span class="paren3">(<span class="paste">Math/pow x 3</span>)</span> <span class="paren3">(<span class="paste">Math/pow x 4</span>)</span> <span class="paren3">(<span class="paste">Math/pow x 5</span>)</span></span>)</span></span>)</span>
+
+<span class="comment">; our fitness function, fitness is the sum of the difference between our target value 
+</span><span class="comment">; and the candidate at 21 points over the range [-1, 1]. 
+</span><span class="paren1">(<span class="paste"><i><span class="symbol">defn</span></i> fitness-fn [ind-fn]
+  <span class="paren2">(<span class="paste"><a href="http://www.lispworks.com/reference/HyperSpec/Body/f_reduce.htm" class="symbol">reduce</a> <a href="http://www.lispworks.com/reference/HyperSpec/Body/a_pl.htm" class="symbol">+</a> <span class="paren3">(<span class="paste"><a href="http://www.lispworks.com/reference/HyperSpec/Body/f_map.htm" class="symbol">map</a> #<span class="paren4">(<span class="paste">Math/abs <span class="paren5">(<span class="paste"><a href="http://www.lispworks.com/reference/HyperSpec/Body/a__.htm" class="symbol">-</a> <span class="paren6">(<span class="paste">ind-fn %</span>)</span> <span class="paren6">(<span class="paste">target-fn %</span>)</span></span>)</span></span>)</span> <span class="paren4">(<span class="paste">range -1 1 0.1</span>)</span></span>)</span></span>)</span></span>)</span>  
+
+<span class="comment">; We're using the default properties and overriding the population size
+</span><span class="comment">; To see what the defaults are type (default-properties) at the REPL   
+</span><span class="paren1">(<span class="paste">def props <span class="paren2">(<span class="paste"><i><span class="symbol">default-properties</span></i> <span class="string">"population_size"</span> 200</span>)</span></span>)</span>
+
+<span class="comment">; our grammar, each production is a valid clojure function
+</span><span class="paren1">(<span class="paste">def grammar <span class="paren2">(<span class="paste">create-grammar
+ <span class="keyword">:code</span> <span class="string">"(fn [x] &lt;expr&gt;)"</span>
+ <span class="keyword">:expr</span> <span class="string">"(&lt;op&gt; &lt;expr&gt; &lt;expr&gt;) | &lt;var&gt;"</span>
+ <span class="keyword">:op</span>   <span class="string">"+|-|*"</span>
+ <span class="keyword">:var</span> <span class="string">"x|1.0"</span></span>)</span></span>)</span>
+
+ <span class="comment">; Run GEVA, the results are returned in a map
+</span><span class="paren1">(<span class="paste">def result  <span class="paren2">(<span class="paste">geva-run grammar props fitness-fn</span>)</span></span>)</span> 
+<span class="paren1">(<span class="paste">println <span class="string">"GEVA evaluation completed in "</span> <span class="paren2">(<span class="paste"><span class="keyword">:elapsed-ms</span> result</span>)</span> <span class="string">"ms"</span></span>)</span>
+<span class="paren1">(<span class="paste">println <span class="string">"The best fitness was "</span> <span class="paren2">(<span class="paste"><a href="http://www.lispworks.com/reference/HyperSpec/Body/f_apply.htm" class="symbol">apply</a> <a href="http://www.lispworks.com/reference/HyperSpec/Body/f_max_m.htm" class="symbol">min</a> <span class="paren3">(<span class="paste">-&gt; result <span class="keyword">:stats</span> <span class="keyword">:best-fitness</span></span>)</span></span>)</span></span>)</span></span>
+  </pre>
+<div class="credits">Clojure source highlighting provided by the excellent service at <a href="http://paste.lisp.org/">http://paste.lisp.org</a></div>
+
+
+  
+  <h3 id="scripting-geva-runs">Scripting GEVA runs with Clojure</h3>
+  The clojure support can be used to run GEVA with standard (Java) fitness functions specified in a properties files and operate on the statistics collected. 
+  The following example runs the HelloWorld example 50 times for a number of population sizes and plots the mean number of generations requred to find a solution with <a href="http://incanter.org/">Incanter.</a> The resulting output looks like:
+<img src="./helloworld_pop_size_sweep.png" alt="Graph output from sample program"/>
+
+<pre class="paste-area" 
+    ><span class="paste"><span class="paren1">(<span class="paste">ns example2
+  <span class="paren2">(<span class="paste"><span class="keyword">:use</span> [geva]
+	[incanter core stats charts]</span>)</span></span>)</span>
+    
+<span class="comment">; Run geva 50 times and calculate the average number of generations
+</span><span class="comment">; required to find a solution. 
+</span><span class="comment">; Assumes that the properties contains stopWhenSolved=true
+</span><span class="paren1">(<span class="paste"><i><span class="symbol">defn</span></i> mean-gen-for-pop-size [props pop-size]
+  <span class="paren2">(<span class="paste"><i><span class="symbol">let</span></i> [new-props <span class="paren3">(<span class="paste">set-properties props <span class="string">"population_size"</span> pop-size</span>)</span>
+
+	result-seq <span class="paren3">(<span class="paste">map #<span class="paren4">(<span class="paste">count <span class="paren5">(<span class="paste">-&gt; % <span class="keyword">:stats</span> <span class="keyword">:best-fitness</span></span>)</span></span>)</span>
+			<span class="paren4">(<span class="paste">take 50 <span class="paren5">(<span class="paste">repeatedly #<span class="paren6">(<span class="paste">geva-run new-props</span>)</span></span>)</span></span>)</span></span>)</span>]
+    <span class="paren3">(<span class="paste">assoc {} <span class="keyword">:pop-size</span> pop-size <span class="keyword">:mean-gen</span> <span class="paren4">(<span class="paste">mean result-seq</span>)</span></span>)</span></span>)</span></span>)</span>
+
+<span class="comment">; Plot the mean number of generations required to find a solution 
+</span><span class="comment">; over a series of series of population sizes
+</span><span class="paren1">(<span class="paste"><i><span class="symbol">defn</span></i> plot-gen-sizes [props]
+  <span class="paren2">(<span class="paste"><i><span class="symbol">let</span></i> [pop-sizes [10 25 50 100 150 200 250 500]
+	data <span class="paren3">(<span class="paste">map #<span class="paren4">(<span class="paste">mean-gen-for-pop-size props %</span>)</span> pop-sizes</span>)</span>]
+    <span class="paren3">(<span class="paste">view <span class="paren4">(<span class="paste">xy-plot <span class="paren5">(<span class="paste">map <span class="keyword">:pop-size</span> data</span>)</span> <span class="paren5">(<span class="paste">map <span class="keyword">:mean-gen</span> data</span>)</span> 
+		   <span class="keyword">:title</span> <span class="string">"HelloWorld mean soluton gen"</span> 
+		   <span class="keyword">:x-label</span> <span class="string">"pop size"</span> <span class="keyword">:y-label</span> <span class="string">"mean gen to solution"</span></span>)</span></span>)</span></span>)</span></span>)</span>
+
+<span class="comment">; load the HelloWorld properties file and override the grammar location then plot data
+</span><span class="paren1">(<span class="paste">plot-gen-sizes <span class="paren2">(<span class="paste">load-properties  <span class="string">"../../param/Parameters/HelloWorld.properties"</span> 
+				  <span class="string">"grammar_file"</span> <span class="string">"../../param/Grammar/letter_grammar.bnf"</span></span>)</span></span>)</span></span></pre>
+<div class="credits">Clojure source highlighting provided by the excellent service at <a href="http://paste.lisp.org/">http://paste.lisp.org</a></div>
+
+
+
+  <h3 id="creating-clj-fitness">Writing fitness functions in clojure</h3>
+  This approach allows you to model the problem in Clojure and use the GEVA GUI to run evolutionary scenarios.
+  Follow these steps:
+  <ul>
+    <li>Create a grammar file for your problem, by default it's assumed that the grammar productions are valid clojure code.</li>
+    <li>Create a clojure source file that contains your fitness function, the function should accept 1 parameter which is the mapped phenotype to be evaluated.</li>
+    <li>Create a properties file and set the following additional properties:
+      <ul>
+	<li><em>clojure.fitness.file</em> - the path to your clojure fitness source file</li>
+	<li><em>clojure.fitness.function</em> - the name of your fitness function</li>
+	<li>Optional - <em>clojure.expression.function</em> - the function used to convert Phenotypes before calling the fitness function. The default (geva/default-create-ind) assumes that individuals are valid clojure source and calls (eval(read-string phenotype))</li>
+	<li>Optional - <em>clojure.group.fitness.function</em> - the function used to evaluate a population once per generation. By default we use pmap called from geva/set-group-fitness!, see the source for the required method signature.
+      </ul>
+  </ul>
+  <br/>
+  Start the GEVA properties GUI and go to [Configure]-&gt;[Advanced]-&gt; and change Main.Run to Main.ClojureRun
+  On the main screen, select your properties & grammars files and click on [Run]
+
+
+</body>
+
+</html>

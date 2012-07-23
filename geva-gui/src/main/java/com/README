@@ -1,0 +1,5 @@
+Rieps is a lgpl java library to generate postscript output. It's developped with netbeans 5.5. the netbeans/rieps folder is a netbeans project. To build the library you have to use java 6.
+To run the example script :
+java -cp dist/rieps.jar com.rie.rieps.simpletest.GenPSFile /tmp/output.ps
+and then display the postscript to the screen using ghostview :
+gs -sDEVICE=x11 /tmp/output.ps

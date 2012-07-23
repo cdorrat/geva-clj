@@ -1,0 +1,6 @@
+<prog> ::= <func> | <func><prog>
+<func> ::= writeChar( <letter> );
+<letter> ::= <vowel> | <consonant> | <space>
+<space> ::= '_'
+<vowel> ::='a'|'o'|'u'|'e'|'i'
+<consonant> ::= 'q'|'w'|'r'|'t'|'y'|'p'|'s'|'d'|'f'|'g'|'h'|'j'|'k'|'l'|'z'|'x'|'c'|'v'|'b'|'n'|'m'

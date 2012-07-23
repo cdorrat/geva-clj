@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>geva-clj</artifactId>
+    <groupId>cdorrat</groupId>
+    <version>1.2-SNAPSHOT</version>
+  </parent>
+  <groupId>cdorrat</groupId>
+  <artifactId>geva-core</artifactId>
+  <version>1.2-SNAPSHOT</version>
+  <name>geva-core</name>
+  <url>http://maven.apache.org</url>
+
+  <build>
+    <resources>
+      <resource>
+	<directory>src/main/clojure</directory>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+      <plugin>
+	<groupId>com.theoryinpractise</groupId>
+	<artifactId>clojure-maven-plugin</artifactId>
+	<version>1.3.6</version>
+	<extensions>true</extensions>
+	<executions>
+	  <!-- instead of using the AOT compiler will include the clojure source.
+	  <execution>
+	    <id>compile</id>
+	    <phase>compile</phase>
+	    <goals>
+              <goal>compile</goal>
+	    </goals>
+	  </execution> -->
+	  <execution>
+	    <id>test</id>
+	    <phase>test</phase>
+	    <goals>
+              <goal>test</goal>
+	    </goals>
+	  </execution>
+	</executions>
+      </plugin>
+    </plugins>
+
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.clojure</groupId>
+      <artifactId>clojure</artifactId>
+      <version>1.3.0</version>
+    </dependency>
+    <dependency>
+    <groupId>antlr</groupId>
+      <artifactId>antlr</artifactId>
+      <version>2.7.5</version>
+    </dependency>
+
+    <dependency>
+      <groupId>asm</groupId>
+      <artifactId>asm</artifactId>
+      <version>2.2</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.1</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>org.apache.bsf</groupId>
+      <artifactId>bsf-api</artifactId>
+      <version>3.1</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>groovy</groupId>
+      <artifactId>groovy</artifactId>
+      <version>1.0</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>jscheme</groupId>
+      <artifactId>jscheme</artifactId>
+      <version>7.2</version>
+    </dependency>
+
+
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+</project>

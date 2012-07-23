@@ -1,0 +1,7 @@
+<Sys>   ::= <n><angle><exp>=<expr>
+<n>     ::= 2|3|4
+<angle> ::= 18.0|20.0|24.0|30.0|36.0|40.0|45.0|60.0|72.0|90.0
+<exp>   ::= <exp> <op> <exp> | <var>
+<expr> 	::= <expr> <op> <expr> | [<expr> <op> <expr>] | <var>
+<op>	::= +|-
+<var>	::= F

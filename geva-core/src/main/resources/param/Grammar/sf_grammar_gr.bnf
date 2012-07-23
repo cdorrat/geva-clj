@@ -1,0 +1,6 @@
+<prog> ::= <code>
+<code> ::= <line> | <code> <line>
+<line> ::= <condition>\n | <op>\n
+<condition> ::= if(food_ahead()==1) { <opcode> } else { <opcode> }
+<op> ::=  left(); | right(); | move();
+<opcode> ::= <op> | <opcode> <op>

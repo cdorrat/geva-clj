@@ -1,0 +1,6 @@
+<prog> ::= <expr>
+<expr> ::= <expr> <op> <expr> | ( <expr> <op> <expr> ) | <pre-op> ( <expr> ) | <protected-op> |<var>
+<op> ::= + | * | -
+<protected-op> ::= div( <expr>, <expr>)
+<pre-op> ::= sin | cos | exp | inv | log
+<var> ::= X | 1.0

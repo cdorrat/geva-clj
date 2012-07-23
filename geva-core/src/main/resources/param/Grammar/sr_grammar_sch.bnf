@@ -1,0 +1,3 @@
+<expr> ::= ( <op> <expr> <expr> ) | <var>
+<op>   ::= +|-|*
+<var> ::= x0|1.0

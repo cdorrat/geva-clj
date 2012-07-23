@@ -1,0 +1,635 @@
+50 dict
+begin
+% append two arrays : [0 0 a b c] [0 0 d e f] aa [0 0 a b c d e f]
+/aa {
+	mark 3 -2 roll % m a1 a2
+	exch aload pop
+	counttomark -1 roll dup length 2 sub 2 exch getinterval aload pop
+	]
+} def
+
+%
+% Encoding vector and redefinition of findfont for the ISO Latin1 standard.
+% The 18 characters missing from ROM based fonts on older printers are noted
+% below.
+%
+/ISOLatin1Encoding [
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /space
+ /exclam
+ /quotedbl
+ /numbersign
+ /dollar
+ /percent
+ /ampersand
+ /quoteright
+ /parenleft
+ /parenright
+ /asterisk
+ /plus
+ /comma
+ /minus
+ /period
+ /slash
+ /zero
+ /one
+ /two
+ /three
+ /four
+ /five
+ /six
+ /seven
+ /eight
+ /nine
+ /colon
+ /semicolon
+ /less
+ /equal
+ /greater
+ /question
+ /at
+ /A
+ /B
+ /C
+ /D
+ /E
+ /F
+ /G
+ /H
+ /I
+ /J
+ /K
+ /L
+ /M
+ /N
+ /O
+ /P
+ /Q
+ /R
+ /S
+ /T
+ /U
+ /V
+ /W
+ /X
+ /Y
+ /Z
+ /bracketleft
+ /backslash
+ /bracketright
+ /asciicircum
+ /underscore
+ /quoteleft
+ /a
+ /b
+ /c
+ /d
+ /e
+ /f
+ /g
+ /h
+ /i
+ /j
+ /k
+ /l
+ /m
+ /n
+ /o
+ /p
+ /q
+ /r
+ /s
+ /t
+ /u
+ /v
+ /w
+ /x
+ /y
+ /z
+ /braceleft
+ /bar
+ /braceright
+ /asciitilde
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /.notdef
+ /dotlessi
+ /grave
+ /acute
+ /circumflex
+ /tilde
+ /macron
+ /breve
+ /dotaccent
+ /dieresis
+ /.notdef
+ /ring
+ /cedilla
+ /.notdef
+ /hungarumlaut
+ /ogonek
+ /caron
+ /space
+ /exclamdown
+ /cent
+ /sterling
+ /currency
+ /yen
+ /brokenbar % missing
+ /section
+ /dieresis
+ /copyright
+ /ordfeminine
+ /guillemotleft
+ /logicalnot
+ /hyphen
+ /registered
+ /macron
+ /degree % missing
+ /plusminus % missing
+ /twosuperior % missing
+ /threesuperior % missing
+ /acute
+ /mu % missing
+ /paragraph
+ /periodcentered
+ /cedilla
+ /onesuperior % missing
+ /ordmasculine
+ /guillemotright
+ /onequarter % missing
+ /onehalf % missing
+ /threequarters % missing
+ /questiondown
+ /Agrave
+ /Aacute
+ /Acircumflex
+ /Atilde
+ /Adieresis
+ /Aring
+ /AE
+ /Ccedilla
+ /Egrave
+ /Eacute
+ /Ecircumflex
+ /Edieresis
+ /Igrave
+ /Iacute
+ /Icircumflex
+ /Idieresis
+ /Eth % missing
+ /Ntilde
+ /Ograve
+ /Oacute
+ /Ocircumflex
+ /Otilde
+ /Odieresis
+ /multiply % missing
+ /Oslash
+ /Ugrave
+ /Uacute
+ /Ucircumflex
+ /Udieresis
+ /Yacute % missing
+ /Thorn % missing
+ /germandbls
+ /agrave
+ /aacute
+ /acircumflex
+ /atilde
+ /adieresis
+ /aring
+ /ae
+ /ccedilla
+ /egrave
+ /eacute
+ /ecircumflex
+ /edieresis
+ /igrave
+ /iacute
+ /icircumflex
+ /idieresis
+ /eth % missing
+ /ntilde
+ /ograve
+ /oacute
+ /ocircumflex
+ /otilde
+ /odieresis
+ /divide % missing
+ /oslash
+ /ugrave
+ /uacute
+ /ucircumflex
+ /udieresis
+ /yacute % missing
+ /thorn % missing
+ /ydieresis
+] def
+
+/NewFontDirectory FontDirectory maxlength dict def
+
+%
+% Apparently no guarantee findfont is defined in systemdict so the obvious
+%
+% systemdict /findfont get exec
+%
+% can generate an error. So far the only exception is a VT600 (version 48.0).
+%
+
+userdict /@RealFindfont known not {
+ userdict begin
+ /@RealFindfont systemdict begin /findfont load end def
+ end
+} if
+
+/findfont {
+ dup NewFontDirectory exch known not {
+ dup
+ %dup systemdict /findfont get exec % not always in systemdict
+ dup userdict /@RealFindfont get exec
+ dup /Encoding get StandardEncoding eq {
+ dup length dict begin
+ {1 index /FID ne {def}{pop pop} ifelse} forall
+ /Encoding ISOLatin1Encoding def
+ currentdict
+ end
+ /DummyFontName exch definefont
+ } if
+ NewFontDirectory 3 1 roll put
+ } if
+ NewFontDirectory exch get
+} bind def
+
+/gs {gsave} def
+/gr {grestore} def
+/ix { index } def
+/mt { moveto } def
+/trl { translate } def
+/rt { rotate } def
+/strk { stroke } def
+
+% if linewith is < 0, then disable stroke
+/slw {
+	dup 0 lt {
+		/strk { } def
+	}
+	{
+		/strk { stroke } def
+	}
+	ifelse
+	setlinewidth
+} def
+
+/setfont-setlh{
+	setfont
+	strlh gs 0 0 mt false charpath flattenpath pathbbox gr exch pop sub 1 mul exch pop 
+	/lh exch def
+} def
+
+%% string1 string2 appendstr string
+% Function: Concatenates two strings together.
+/appendstr { % str1 str2
+	dup length 2 ix length add string dup % str1 str2 nstr nstr
+	0 4 ix putinterval dup % str1 str2 nstr+1 nstr+1
+	3 ix length 3 ix putinterval % str1 str2 nstr+1+2
+	3 -2 roll pop pop % nstr+1+2
+} bind def
+
+/spc { ( ) } bind def
+/strlh { (Mg) } def
+
+% lineheight : calcul the height of a line
+%/lh {strlh gs false charpath flattenpath pathbbox gr exch pop sub 1 mul exch pop } def
+%/lh { strlh stringwidth exch pop 1 mul} def
+/lh { 0 } def
+
+% create an array wich contain text line with same width : width (text) makelines array
+% example : 50 (a very long text) makelines
+/makelines {
+	mark % w (txt) mark
+
+	2 ix
+	2 ix
+	spc search % I get the first word
+	{
+		exch pop
+	}
+	{
+		()
+	} ifelse
+	exch % w (txt) mark w () (txt)
+	{
+		% w (txt) mark w (line 1) ... (line N) (line ) (rest of text)
+		spc search
+		{
+			% w (txt) mark w (line 1) ... (line N) (line ) (rest txt) ( ) (word)
+			exch pop % w (txt) mark w (line 1) ... (line N) (line ) (rest txt) (word)
+			dup 3 ix spc appendstr exch appendstr % w (txt) mark w (line 1) ... (line N) (line ) (rest txt) (word) (line word)
+			dup stringwidth pop
+			counttomark -1 add ix
+			gt
+			{
+				% (line word) is larger than w
+				pop
+				exch % w (txt) mark w (line 1) ... (line N) (line ) (word ) (rest txt) 
+			}
+			{
+				% (line word) is smaller than w
+				exch pop % w (txt) mark w (line 1) ... (line N) (line ) (rest txt) (line word)
+				3 1 roll exch pop % w (txt) mark w (line 1) ... (line N) (line word) (rest txt)
+
+			} ifelse
+		}
+		{
+                        1 ix 1 ix appendstr stringwidth pop
+			counttomark -1 add ix
+			lt
+			{
+				spc exch appendstr appendstr
+			} if
+                        exit
+		}ifelse
+	} loop
+
+	counttomark -1 roll pop
+	counttomark array astore exch pop % create the arry and remove the mark
+	3 1 roll pop pop
+	% add xoffset and yoffset
+	dup length 2 add array dup 3 -1 roll 2 exch putinterval
+	dup 0 0 put dup 1 0 put
+} def
+
+% print text well justified: hz_justification rotation weight x-top y-left [lines]
+% example : 0 33 50 100 100 [(fist line) (second line) (third line) ... ]
+% justification : 0 : left, 1: center, 2: right, 3: full
+/printlines {
+	gs
+	2 ix 2 ix trl
+	4 ix rt
+
+	dup 0 get type /integertype eq { % the two first elemetns are xoffset and yoffset
+		dup 0 get 1 ix 1 get trl
+		dup length 2 sub
+		2 exch getinterval
+	} if
+
+	5 ix 0 5 ix 0 0 5 ix
+	/printaline load forall
+	11 {pop} repeat
+	gr
+} def
+
+% print only one line : justification rt weight x y (txt) printaline justification weight x newy
+% do a line jump and print the line
+/printaline {
+	gs
+	2 ix 2 ix lh add trl
+
+
+	5 ix 0 le 6 ix 3 gt or { % left justified 0>=type>3
+		4 ix rt
+		0 0 mt
+		show
+		null
+	} if
+
+
+	5 ix 1 eq { % 1 centered
+		dup
+		stringwidth pop % justification rt weight x y (txt) sw
+		4 ix exch neg add 2 div 0 trl
+		4 ix rt
+		0 0 mt
+		show
+		null
+	} if
+	
+	5 ix 2 eq { % 2 right justified
+		dup stringwidth pop % justification weight x y (txt) sw
+		4 ix exch neg add
+		0 trl
+		4 ix rt
+		0 0 mt
+		show
+		null
+	} if
+
+	5 ix 3 eq { % 3 full justified
+		dup stringwidth pop % justification rt weight x y (txt) sw
+		4 ix exch neg add % justification rt weight x y (txt) diffw
+		1 ix length div 0 2 ix % justification rt weight x y (txt) space 0 (txt)
+		7 ix rt
+		0 0 mt
+		ashow
+	} if
+
+	pop % remove null
+
+	lh add
+	
+	gr
+} def
+
+% print text well vertical and horizontal justified: vtclip vtjustified height hz_justification rotation weight x-top y-left [lines]
+/xprintlines {
+	8 ix 8 ix 8 ix 4 ix exch 4 ix % vtclip vtjustified height hz_justification rotation weight x-top y-left [lines] vtclip vtjustified y-left height [lines]
+	vertical_justify % vtclip vtjustified height hz_justification rotation weight x-top y-left [lines] newy height [linesclipped]
+	exch pop
+	4 -2 roll pop pop % vtclip vtjustified height hz_justification rotation weight x-top newy [linesclipped]
+	printlines
+	3 {pop} repeat
+} def
+
+% configure lines and y pos for vertical justify : clip justify ypos height [lines] vertical_justify ypos height [linesclipped]
+% justify : 0:top, 1: center, 2: bottom
+% example : true 0 100 50 [ (hello) (the) (world) ] vertical_justify
+/vertical_justify {
+	exch lh 2 div add exch % I substract 1/2 line of the height
+	4 ix { % is clipped ?
+		1 ix % clip justify ypos height [lines] height
+		cliplines
+	} if
+
+	3 ix 0 le 4 ix 2 gt or { % top
+	} if
+
+	3 ix 1 eq { % center
+		dup length 2 sub lh neg mul % clip justify ypos height [lines] linesheight
+		2 ix exch % clip justify ypos height [lines] height linesheight
+		sub 2 div neg % clip justify ypos height [lines] ymove
+		exch dup dup 1 get 4 -1 roll add 1 exch put
+		%exch dup length 2 add array dup 3 -1 roll 2 exch putinterval dup
+		%2 ix 1 exch put dup 0 0 put
+		%exch pop
+	} if
+
+	3 ix 2 eq { % bottom
+		dup length 2 sub lh neg mul % clip justify ypos height [lines] linesheight
+		2 ix exch % clip justify ypos height [lines] height linesheight
+		sub neg % clip justify ypos height [lines] ymove
+		exch dup dup 1 get 4 -1 roll add 1 exch put
+		%exch dup length 2 add array dup 3 -1 roll 2 exch putinterval dup
+		%2 ix 1 exch put dup 0 0 put
+		%exch pop
+	} if
+
+	5 -2 roll pop pop % ypos height [lines]
+} def
+
+% clips lines into height : [lines] height cliplines [linesclipped]
+% example : [(hello) (the) (world)] 50 cliplines [(hello) (the)]
+/cliplines {
+	exch dup length 2 sub lh neg mul % height [lines] normalTxtHeight
+	dup 3 ix % height [lines] normalTxtHeight normalTxtHeight height
+	gt{
+		% txtheight is greater than height
+		2 ix sub dup 0 gt{
+		lh neg div ceiling % nb lines to remove : % height [lines] nblinetoremove
+		1 ix length 2 sub exch sub % nb lines to remove : % height [lines] nblinetoprint
+		0 exch 2 add cvi getinterval % nb lines to remove : % height [linesclipped]
+		}
+		{
+			pop
+		} ifelse
+		exch pop % [linesclipped]
+	}
+	{
+		pop exch pop
+	}
+	ifelse
+} def
+
+
+% draw rectangle with rounded corner : color dash linewidth strk color fill rt x y width height radius
+% example : true false 50 400 400 100 50 10 rectar
+/rectar {
+	newpath
+	gs
+
+	4 ix 4 ix % strk fill rt x y width height radius x y
+	trl
+
+	5 ix rt
+
+	2 ix 2 div % strk fill rt x y width height radius x'
+	0 mt
+	2 ix 0 % strk fill rt x y width height radius x2 y2
+	1 ix 4 ix neg % strk fill rt x y width height radius x2 y2 x3 y3
+	4 ix arcto 4 {pop} repeat
+
+	2 ix 2 ix neg % strk fill rt x y width height radius x3 y3
+	0 4 ix neg % strk fill rt x y width height radius x3 y3 x4 y4
+	4 ix arcto 4 {pop} repeat
+
+	0 2 ix neg % strk fill rt x y width height radius x4 y4
+	0 0 % strk fill rt x y width height radius x4 y4 x1 y1
+	4 ix arcto 4 {pop} repeat
+
+	0 0 % strk fill rt x y width height radius x1 y1
+	4 ix 2 div 0 % strk fill rt x y width height radius x1 y1 x' y'
+	4 ix arcto 4 {pop} repeat
+
+        closepath
+        6 {pop} repeat % clean stack
+
+	{
+		gs
+		setgray
+		fill
+		gr
+	} if
+
+	{
+		gs
+		slw
+		setdash
+		setgray
+		strk
+		gr
+	} if
+	gr
+} def
+
+/ellipse { % color dash linewidth strk color fill rt x y xr yr on the stack
+	gs
+	matrix currentmatrix 6 3 roll % color dash linewidth strk color fill xr yr matrix rt x y
+	trl rt 3 1 roll scale 0 0 1 0 360 arc closepath setmatrix
+	{
+		gs
+		setgray
+		fill
+		gr
+	} if
+
+	{
+		gs
+		slw
+		setdash
+		setgray
+		strk
+		gr
+	} if
+	gr
+} def
+
+% draw a line : color dash linewidth x y w h line
+/line {
+	gs
+	newpath
+	4 -2 roll
+	trl
+	0 0 mt
+	rlineto
+	slw
+	setdash
+	setgray
+	strk
+	gr
+} def
+

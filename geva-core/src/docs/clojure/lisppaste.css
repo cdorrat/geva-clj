@@ -1,0 +1,85 @@
+body { background: white; color: black; }
+a { margin:1px; border-collapse: collapse; }
+a:link { color:#335570; text-decoration: none; background-color: transparent;}
+a:visited { color:#705533; text-decoration: none; background-color: transparent;}
+a:hover { color:#000000; text-decoration: none; background-color: #BBCCEE; border: 1px solid #335577; margin: 0px;}
+a:active { color:#000000; text-decoration: none; background-color: #CCBBFF; border: 1px solid #335577; margin: 0px;}
+.simple-paste-list { background-color : #E9FFE9 ; border: 2px solid #9D9; padding : 4px; font-size: small; }
+.simple-paste-list td { border-bottom: 1px dotted #9D9; font-size: small; }
+table.detailed-paste-list { border-collapse: collapse; border : 1px solid #AAA ; }
+table.detailed-paste-list td { border : 1px dotted #AAA; }
+table.info-table { border-collapse: collapse; border : 1px solid #AAA ; background-color: #F9E9F9; empty-cells: hide; }
+table.info-table td { border : 1px dotted #AAA; background-color: transparent; padding-left: 2em; padding-right: 2em; }
+table.info-table th { border : 1px dotted #AAA; background-color: transparent; text-align: left; padding-right: 1em; }
+table.rate-table { border-collapse: collapse; border : 1px solid #AAA ; background-color: #F9E9F9; empty-cells: hide; }
+table.rate-table td { border : 1px dotted #AAA; background-color: transparent; padding: 2pt; }
+table.rate-table th { border : 1px dotted #AAA; background-color: transparent; text-align: left; padding: 1pt; }
+.new-paste-form { background-color : #FFE9E9 ; border: 2px solid #D99; padding : 4px; }
+.paste-header { background-color : #E9F9F9 ; border: 2px solid #9DD; padding : 4px; margin-bottom : 4px; }
+.info-text { background-color : #E9F9F9 ; border: 2px solid #9DD; padding : 4px; margin-top : 4px; text-align: justify; }
+div.ads-text { background-color : #F9E9F9 ; border: 2px solid #D9D; padding : 4px; margin-top : 4px; text-align: justify; font-size: small; display: table; padding-right: 1em; }
+div.ads-text ul { margin-top: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; }
+div.ads-text li { padding-bottom: 1ex; }
+.ohloh a:link { margin: 0px; border-collapse: collapse; border: 0; }
+.ohloh a:active { margin: 0px; border-collapse: collapse; border: 0; }
+.ohloh a:visited { margin: 0px; border-collapse: collapse; border: 0; }
+.ohloh a:hover { margin: 0px; border-collapse: collapse; border: 0; }
+.controls { background-color : #E9E9FF ; border: 2px solid #99D; padding : 4px; display: inline-block; }
+.small-header { font-weight: bold; font-size: large; }
+.top-header { text-align : center; font-style: italic; font-weight: bold; font-size: x-large; }
+.top-link { background-color : #E9F9F9 ; border: 2px solid #9DD; padding: 4px; font-weight: bold; font-size: large; display: table; margin-bottom: 1em; margin-left: auto; margin-right: auto; }
+.big-warning { text-align : center; font-weight: bold; font-size: x-large; }
+pre.paste-area {
+    white-space: pre-wrap; /* css-3 */
+    white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
+    white-space: -pre-wrap; /* Opera 4-6 */
+    white-space: -o-pre-wrap; /* Opera 7 */
+    word-wrap: break-word; /* Internet Explorer 5.5+ */
+    background-color : #F4F4F4 ; border : 2px solid #AAA ; padding : 4px;
+}
+.bottom-links { background-color : #F9F9E9; border: 2px solid #DD9; padding : 4px; margin-bottom : 4px;}
+#main-link { text-align : left; font-weight: bold; }
+#other-links { text-align : right; }
+hr { border: 1px solid #999; }
+div.credits {font-size: small; color: #777777;}
+@media screen {
+div.altdiv { display: none; }
+}
+table.webutils-form { background-color : #E9E9FF ; border: 2px solid #99D; padding : 4px; }
+table.webutils-form th { text-align: left; }
+.paste { background-color: #F4F4F4; color: black; }
+.paste:hover { background-color: #F4F4F4; color: black; }
+.symbol { color : #770055; background-color : transparent; border: 0px; margin: 0px;}
+a.symbol:link { color : #229955; background-color : transparent; text-decoration: none; border: 0px; margin: 0px; }
+a.symbol:active { color : #229955; background-color : transparent; text-decoration: none; border: 0px; margin: 0px; }
+a.symbol:visited { color : #229955; background-color : transparent; text-decoration: none; border: 0px; margin: 0px; }
+a.symbol:hover { color : #229955; background-color : transparent; text-decoration: none; border: 0px; margin: 0px; }
+a.diff-link:link { color : #229955; background-color : transparent; text-decoration: underline; border: 0px; margin: 0px; }
+a.diff-link:active { color : #229955; background-color : transparent; text-decoration: underline; border: 0px; margin: 0px; }
+a.diff-link:visited { color : #229955; background-color : transparent; text-decoration: underline; border: 0px; margin: 0px; }
+a.diff-link:hover { color : #229955; background-color : transparent; text-decoration: underline; border: 0px; margin: 0px; }
+.special { color : #FF5000; background-color : inherit; }
+.keyword { color : #770000; background-color : inherit; }
+.comment { color : #007777; background-color : inherit; }
+.string { color : #777777; background-color : inherit; }
+.atom { color : #314F4F; background-color : inherit; }
+.macro { color : #FF5000; background-color : inherit; }
+.variable { color : #36648B; background-color : inherit; }
+.function { color : #8B4789; background-color : inherit; }
+.attribute { color : #FF5000; background-color : inherit; }
+.character { color : #0055AA; background-color : inherit; }
+.syntaxerror { color : #FF0000; background-color : inherit; }
+.diff-deleted { color : #5F2121; background-color : inherit; }
+.diff-added { color : #215F21; background-color : inherit; }
+span.paren1 { background-color : inherit; -webkit-transition: background-color 0.2s linear; }
+span.paren1:hover { color : inherit; background-color : #BAFFFF; }
+span.paren2 { background-color : inherit; -webkit-transition: background-color 0.2s linear; }
+span.paren2:hover { color : inherit; background-color : #FFCACA; }
+span.paren3 { background-color : inherit; -webkit-transition: background-color 0.2s linear; }
+span.paren3:hover { color : inherit; background-color : #FFFFBA; }
+span.paren4 { background-color : inherit; -webkit-transition: background-color 0.2s linear; }
+span.paren4:hover { color : inherit; background-color : #CACAFF; }
+span.paren5 { background-color : inherit; -webkit-transition: background-color 0.2s linear; }
+span.paren5:hover { color : inherit; background-color : #CAFFCA; }
+span.paren6 { background-color : inherit; -webkit-transition: background-color 0.2s linear; }
+span.paren6:hover { color : inherit; background-color : #FFBAFF; }

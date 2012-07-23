@@ -1,0 +1,13 @@
+<start> ::= 4 8 6 <num> <num> 9 7 <num> <num> 5 1 <num> <num> <num> 7 <num> <num> <num> <num> <num> <num> <num> 3 <num> <num> 8 <num> <num> <num> 2 <num> <num> 3 5 4 <num> <num> <num> <num> 9 <num> 1 <num> <num> <num> <num> 7 1 4 <num> <num> 9 <num> <num> <num> 6 <num> <num> 7 <num> <num> <num> <num> <num> <num> <num> 5 <num> <num> <num> 7 2 <num> <num> 7 1 <num> <num> 8 3 9
+
+<num> ::= <one> | <two> | <three> | <four> | <five> | <six> | <seven> | <eight> | <nine>
+
+<one> ::= 1
+<two> ::= 2
+<three> ::= 3
+<four> ::= 4
+<five> ::= 5
+<six> ::= 6
+<seven> ::= 7
+<eight> ::= 8
+<nine> ::= 9

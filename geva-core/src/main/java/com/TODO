@@ -1,0 +1,6 @@
+Add device specifique options
+Improve postscript code output
+Loading external postscritp font file
+Let user to choose charset encoding (latin1 is used by default)
+Insert EPS file into documents
+Use the charset outpu

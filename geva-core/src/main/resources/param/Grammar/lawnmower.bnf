@@ -1,0 +1,2 @@
+<prog> ::= <command> | <command> <prog>
+<command> ::= mow | left | right
