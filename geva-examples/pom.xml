@@ -4,10 +4,10 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>geva-clj</artifactId>
-    <groupId>cdorrat</groupId>
+    <groupId>org.clojars.cdorrat</groupId>
     <version>1.2-SNAPSHOT</version>
   </parent>
-  <groupId>cdorrat</groupId>
+  <groupId>org.clojars.cdorrat</groupId>
   <artifactId>geva-examples</artifactId>
   <version>1.2-SNAPSHOT</version>
   <name>geva-examples</name>
@@ -15,7 +15,7 @@
 
   <dependencies>
     <dependency>
-        <groupId>cdorrat</groupId>
+        <groupId>org.clojars.cdorrat</groupId>
         <artifactId>geva-core</artifactId>
         <version>1.2-SNAPSHOT</version>
     </dependency>
