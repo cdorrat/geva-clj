@@ -19,8 +19,8 @@
   </li>
 
   <h3>Getting started</h3>
-  Download the geva-clj-1.1.0, jar and add it to your classpath. If you're using leinegen you can add the following to your project.clj.
-  &quot;Some magic stuff here&quot;
+  The easiest way  is to use leinegen, add the following to your project.clj.
+  &quot;[org.clojars.cdorrat/geva-core "1.2-SNAPSHOT"]&quot;
   
   <h3 id="calling-from-clj">Calling GEVA from Clojure</h3>
   This approach allows you to easily embed GEVA in idiomatic clojure programs by including geva-clj-x.x.x.jar on the classpath. and using the geva library.
@@ -58,8 +58,17 @@
   </pre>
 <div class="credits">Clojure source highlighting provided by the excellent service at <a href="http://paste.lisp.org/">http://paste.lisp.org</a></div>
 
+<h4>Clojure Grammars</h4> 
+Specifying grammars in clojure provides some conveniences that  aren't available in the standard geva package.
 
+<ul>
+  <li>Lists can be used for the right hand side of expressions, <br/>eg. :aname (range 1 6) is equivalent to  :aname "1|2|3|4|5"</li>
+  <li>There's basic support for numeric constants, <br/>eg. :anum (constant-int 10 100) produce a grammar that provides constants in the range 10 - 100 in place if &lt;anum&gt;</li>
+  <li>Support for repeating groups with option prefix and suffixes<br/>eg. :aname (repeats "&lt;foo&gt;" 1 3) is equivalent to :aname "&lt;foo&gt;|&lt;foo&gt;&lt;foo&gt;|&lt;foo&gt;&lt;foo&gt;&lt;foo&gt;"
+  </ul>
   
+See <a href="http://github.com/cdorrat/geva-clj/blob/master/geva-core/src/main/clojure/geva.clj">src/main/clojure/geva.clj</a> in geva-core for details.
+
   <h3 id="scripting-geva-runs">Scripting GEVA runs with Clojure</h3>
   The clojure support can be used to run GEVA with standard (Java) fitness functions specified in a properties files and operate on the statistics collected. 
   The following example runs the HelloWorld example 50 times for a number of population sizes and plots the mean number of generations requred to find a solution with <a href="http://incanter.org/">Incanter.</a> The resulting output looks like:
