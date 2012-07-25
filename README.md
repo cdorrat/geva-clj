@@ -13,15 +13,15 @@ In addition to the clojure suuport the main changes from the GEVA release were:
 
 ## Documentation and Source
 
-- Documentation and the source are available at http://cdorrat.github.com/geva-clj/
-- Clojure usage instructions are available at http://geva-clj.github.com/
+- A getting started guide is available at [http://cdorrat.github.com/geva-clj/](http://cdorrat.github.com/geva-clj/)
+- Documentation and the source are available on GitHib at [http://github.com/cdorrat/geva-clj](http://github.com/cdorrat/geva-clj)
 
 
 ## Usage
 The fastest way to use this library is with Leiningen . Add the following to your project.clj dependencies:
 
 ```clojure
-[geva-clj-core "1.2-SNAPSHOT"]
+[org.clojars.cdorrat/geva-core "1.2-SNAPSHOT]
 ```
 
 ## License
