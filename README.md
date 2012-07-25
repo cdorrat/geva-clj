@@ -21,7 +21,7 @@ In addition to the clojure suuport the main changes from the GEVA release were:
 The fastest way to use this library is with Leiningen . Add the following to your project.clj dependencies:
 
 ```clojure
-[org.clojars.cdorrat/geva-core "1.2-SNAPSHOT]
+[org.clojars.cdorrat/geva-core "1.2-SNAPSHOT"]
 ```
 
 ## License
