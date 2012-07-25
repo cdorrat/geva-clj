@@ -1,11 +1,11 @@
 <html>
   <head>
-    <title>Clojure support in GEVA</title>
+    <title>Clojure support for GEVA</title>
     <link type="text/css" rel="stylesheet" href="lisppaste.css" />
   </head>
 
 <body>
-  <h3>Clojure support in <a href="http://ncra.ucd.ie/Site/GEVA.html">GEVA</a></h3>
+  <h3>Clojure support for <a href="http://ncra.ucd.ie/Site/GEVA.html">GEVA</a></h3>
   Clojure is a lisp dialect that runs on the JVM, it has good performance, is well suited to paralell programming and has excellent JAVA interoperability, for more details see <a href="http://clojure.org">http://clojure.org</a> The clojure support that's been added to GEVA falls into 3 categories:
 <ul>
   <li><a href="#calling-from-clj">Call GEVA directly from Clojure</a><br/>
@@ -20,7 +20,7 @@
 
   <h3>Getting started</h3>
   The easiest way  is to use leinegen, add the following to your project.clj.
-  &quot;[org.clojars.cdorrat/geva-core "1.2-SNAPSHOT"]&quot;
+  <pre>[org.clojars.cdorrat/geva-core "1.2-SNAPSHOT]</pre>
   
   <h3 id="calling-from-clj">Calling GEVA from Clojure</h3>
   This approach allows you to easily embed GEVA in idiomatic clojure programs by including geva-clj-x.x.x.jar on the classpath. and using the geva library.
@@ -72,6 +72,7 @@ See <a href="http://github.com/cdorrat/geva-clj/blob/master/geva-core/src/main/c
   <h3 id="scripting-geva-runs">Scripting GEVA runs with Clojure</h3>
   The clojure support can be used to run GEVA with standard (Java) fitness functions specified in a properties files and operate on the statistics collected. 
   The following example runs the HelloWorld example 50 times for a number of population sizes and plots the mean number of generations requred to find a solution with <a href="http://incanter.org/">Incanter.</a> The resulting output looks like:
+<p/>
 <img src="./helloworld_pop_size_sweep.png" alt="Graph output from sample program"/>
 
 <pre class="paste-area" 
@@ -123,6 +124,8 @@ See <a href="http://github.com/cdorrat/geva-clj/blob/master/geva-core/src/main/c
   Start the GEVA properties GUI and go to [Configure]-&gt;[Advanced]-&gt; and change Main.Run to Main.ClojureRun
   On the main screen, select your properties & grammars files and click on [Run]
 
+<h3>Getting the source</h3>
+The source (including the modified version of GEVA) is available on github at <a href="https://github.com/cdorrat/geva-clj">http://github.com/cdorrat/geva-clj</a>
 
 </body>
 
