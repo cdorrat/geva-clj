@@ -81,13 +81,11 @@
       <version>1.1</version>
     </dependency>
 
-
     <dependency>
       <groupId>org.apache.bsf</groupId>
       <artifactId>bsf-api</artifactId>
       <version>3.1</version>
     </dependency>
-
 
     <dependency>
       <groupId>groovy</groupId>
@@ -95,14 +93,11 @@
       <version>1.0</version>
     </dependency>
 
-
     <dependency>
       <groupId>jscheme</groupId>
       <artifactId>jscheme</artifactId>
       <version>7.2</version>
     </dependency>
-
-
 
     <dependency>
       <groupId>junit</groupId>
