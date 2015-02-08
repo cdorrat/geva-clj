@@ -1,13 +1,16 @@
 (ns geva
-  (:require [clojure [string :as str]]
+  (:require [clojure [string :as str] 
+             [set :as cs]
+	     [pprint :as pp]
+             [walk :as walk]]
 	    [clojure.java [io :as io]])  
   (:import [geva.Individuals Individual GEIndividual]
-     [geva.Individuals.FitnessPackage BasicFitness]
-     [geva.Util.Random ThreadSafeRandomNumberGenerator]
-     [geva.Operator.Operations ClojureFitnessEvaluationOperation$FitnessCache RandomInitialiser]
-     [java.util Properties]
-     [geva.Mapper GEGrammar]
-     [geva.Main ClojureRun])
+           [geva.Individuals.FitnessPackage BasicFitness]
+           [geva.Util.Random ThreadSafeRandomNumberGenerator]
+           [geva.Operator.Operations ClojureFitnessEvaluationOperation$FitnessCache RandomInitialiser]
+           [java.util Properties]
+           [geva.Mapper GEGrammar]
+           [geva.Main ClojureRun])
   )
 
 (def ^{:dynamic true}  *geva-properties*  (java.util.Properties.))
@@ -289,15 +292,14 @@
 
 
 (defn constant-int
-  "Create a geva grammar rule for an integer in the range [min-max)"
-  [min max]
-     (let [const-range (- max min)
-	   digits  (count (str const-range))]
-       {:root (format "(geva/constant (int (+ %d (mod (geva/to-integer <::digits>) %d))))" min const-range)
-	:digits (str/join "|" (geva/repeats "<::digit>" 1 digits))
-	:digit (range 10)
-	}
-       ))
+  "Create a geva grammar rule for an integer in the range [min-max]"
+  ([min max] (constant-int min max (- max min)))
+  ([min max num-steps]
+     (let [step-size (-> (- max min) (/ num-steps) Math/ceil int);  (int (Math/ceil (/ (- max min) num-steps)))
+	   digits  (count (str num-steps))]
+       {:root (format "(geva/constant (int (+ %d (* %d  (mod (geva/to-integer <::digits>) %d)))))" min step-size  (inc num-steps))
+	:digits (str/join  (repeat digits "<::digit>")) ;; (str/join "|" (geva/repeats "<::digit>" 1 digits)) 
+	:digit (range 10)})))
      
 (defn constant-double
   "Create a geva grammar rule for a double in the range [min-max) with precision digits after the decimal place"
@@ -316,6 +318,15 @@
      :digit (range 10)}
     ))
 
+(defn constant-double-step
+  "Create a geva grammar rule for a double in the range [min-max] with steps + 1 discrete values.
+   eg. (constant-double-step 0 1 10) is equivalent to (range 0 1 0.1), ie. has 11 discrete values"
+  [min max steps]
+  (let [step-size (/ (- max min) (double steps))
+        int-rules (constant-int 0 steps steps)]
+    (assoc (cs/rename-keys int-rules {:root :num-steps})
+      :root (format "(geva/constant (+ %f (* %f <::num-steps>)))" (double min) step-size))))
+
 
 
 ;;;; ===================================================================================================
@@ -333,3 +344,42 @@
     false
     (>= x y)))
 
+
+
+;; ====================================================================================================
+;; helpers for testing grammars
+(defn ind-to-str
+  "return a string representation of an individuals phenotype"
+  [ind]
+  (if (instance? geva.Individuals.GEIndividual ind)
+    (.. ^geva.Individuals.GEIndividual ind getPhenotype getString)
+    (str ind)))
+
+(defn- simplify-ind
+  "simplify a model for printing, returns a string of the phenotype"
+  [ind]
+  (walk/prewalk (fn [x]
+		  (if (and (seq? x) (= 'geva/constant (first x)))
+		    (walk/macroexpand-all x)
+		    x))
+		(read-string (ind-to-str ind))))
+
+(defn pprint-ind
+  "Create a pretty printed version of ind as a string. All Geva constants in ind will be calculated"
+  [ind]
+  (pp/with-pprint-dispatch pp/code-dispatch
+    (pp/pprint (simplify-ind ind))))
+
+(defn pprint-ind-str
+  "Create a pretty printed version of ind as a string. All Geva constants in ind will be calculated"
+  [ind]
+  (with-out-str
+    (pprint-ind ind)))
+
+(defn print-sample-inds 
+  ([model-grammar] (print-sample-inds model-grammar 3))
+  ([model-grammar n]
+     (doseq [ind (take n (create-inds model-grammar (default-properties)))]
+       (println)
+       (println "----====== <Individual> =====----")
+       (pprint-ind ind))))
